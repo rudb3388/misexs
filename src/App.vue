@@ -13,136 +13,130 @@ import {
 // Estado de la aplicación
 const currentView = ref('home')
 const searchQuery = ref('')
-const selectedDessertId = ref(null)
+const selectedProfileId = ref(null)
 const newReview = ref({
-  author: '',
   rating: 0,
-  comment: ''
+  comment: '',
+  type: ['love', 'work']
 })
 
 // Datos de ejemplo
-const desserts = ref([
+const profiles = ref([
   {
     id: 1,
-    name: 'Tarta de Chocolate',
-    description: 'Deliciosa tarta de chocolate con ganache y base de galleta. Perfecta para los amantes del chocolate intenso.',
+    name: 'José',
     averageRating: 4.5,
     reviews: [
-      { id: 1, author: 'María García', rating: 5, comment: 'La mejor tarta de chocolate que he probado. El sabor es intenso y la textura perfecta.', votes: 12 },
-      { id: 2, author: 'Juan Pérez', rating: 4, comment: 'Muy buena, aunque un poco empalagosa para mi gusto.', votes: 5 }
+      { id: 1, rating: 5, comment: 'La mejor tarta de chocolate que he probado. El sabor es intenso y la textura perfecta.', votes: 12 },
+      { id: 2, rating: 4, comment: 'Muy buena, aunque un poco empalagosa para mi gusto.', votes: 5 }
     ]
   },
   {
     id: 2,
-    name: 'Tiramisú',
-    description: 'Clásico postre italiano con capas de bizcocho empapado en café, mascarpone y cacao en polvo.',
+    name: 'Paco',
     averageRating: 4.8,
     reviews: [
-      { id: 3, author: 'Ana Martínez', rating: 5, comment: 'Auténtico sabor italiano. El equilibrio entre el café y el mascarpone es perfecto.', votes: 8 },
-      { id: 4, author: 'Carlos Rodríguez', rating: 5, comment: 'Increíble. Me transportó directamente a Italia.', votes: 10 },
-      { id: 5, author: 'Laura Sánchez', rating: 4, comment: 'Muy bueno, aunque prefiero un poco más de café.', votes: 3 }
+      { id: 3, rating: 5, comment: 'Auténtico sabor italiano. El equilibrio entre el café y el mascarpone es perfecto.', votes: 8 },
+      { id: 4, rating: 5, comment: 'Increíble. Me transportó directamente a Italia.', votes: 10 },
+      { id: 5, rating: 4, comment: 'Muy bueno, aunque prefiero un poco más de café.', votes: 3 }
     ]
   },
   {
     id: 3,
-    name: 'Cheesecake de Fresa',
-    description: 'Cremoso cheesecake con cobertura de fresas naturales y base de galleta crujiente.',
+    name: 'María',
     averageRating: 4.2,
     reviews: [
-      { id: 6, author: 'Pedro López', rating: 4, comment: 'Muy cremoso y con buen sabor a fresa, aunque la base podría ser más crujiente.', votes: 6 },
-      { id: 7, author: 'Sofía Fernández', rating: 5, comment: 'El equilibrio perfecto entre dulce y ácido. Las fresas estaban muy frescas.', votes: 9 }
+      { id: 6, rating: 4, comment: 'Muy cremoso y con buen sabor a fresa, aunque la base podría ser más crujiente.', votes: 6 },
+      { id: 7, rating: 5, comment: 'El equilibrio perfecto entre dulce y ácido. Las fresas estaban muy frescas.', votes: 9 }
     ]
   },
   {
     id: 4,
-    name: 'Crème Brûlée',
-    description: 'Postre francés con suave crema de vainilla y una capa de caramelo crujiente por encima.',
+    name: 'Laura',
     averageRating: 4.7,
     reviews: [
-      { id: 8, author: 'Miguel Torres', rating: 5, comment: 'El contraste entre la crema suave y el caramelo crujiente es espectacular.', votes: 15 },
-      { id: 9, author: 'Carmen Ruiz', rating: 4, comment: 'Muy buena, aunque prefiero un poco más de vainilla en la crema.', votes: 7 }
+      { id: 8, rating: 5, comment: 'El contraste entre la crema suave y el caramelo crujiente es espectacular.', votes: 15 },
+      { id: 9, rating: 4, comment: 'Muy buena, aunque prefiero un poco más de vainilla en la crema.', votes: 7 }
     ]
   },
   {
     id: 5,
-    name: 'Coulant de Chocolate',
-    description: 'Bizcocho de chocolate con interior fundido. Servido caliente con helado de vainilla.',
+    name: 'Sofía',
     averageRating: 4.9,
     reviews: [
-      { id: 10, author: 'David Gómez', rating: 5, comment: 'Espectacular. El chocolate fundido en el interior es pura magia.', votes: 20 },
-      { id: 11, author: 'Elena Díaz', rating: 5, comment: 'La combinación con el helado de vainilla es perfecta. No puedo pedir más.', votes: 18 },
-      { id: 12, author: 'Roberto Moreno', rating: 5, comment: 'El mejor coulant que he probado en mi vida.', votes: 14 }
+      { id: 10, rating: 5, comment: 'Espectacular. El chocolate fundido en el interior es pura magia.', votes: 20 },
+      { id: 11, rating: 5, comment: 'La combinación con el helado de vainilla es perfecta. No puedo pedir más.', votes: 18 },
+      { id: 12, rating: 5, comment: 'El mejor coulant que he probado en mi vida.', votes: 14 }
     ]
   },
   {
     id: 6,
-    name: 'Flan de Caramelo',
-    description: 'Tradicional flan casero con caramelo líquido y textura sedosa.',
+    name: 'Leonardo',
     averageRating: 4.0,
     reviews: [
-      { id: 13, author: 'Isabel Navarro', rating: 4, comment: 'Muy cremoso y con buen sabor, aunque un poco simple.', votes: 5 },
-      { id: 14, author: 'Francisco Jiménez', rating: 4, comment: 'Buen flan tradicional, me recordó al que hacía mi abuela.', votes: 8 }
+      { id: 13, rating: 4, comment: 'Muy cremoso y con buen sabor, aunque un poco simple.', votes: 5 },
+      { id: 14, rating: 4, comment: 'Buen flan tradicional, me recordó al que hacía mi abuela.', votes: 8 }
     ]
   }
 ])
 
 // Computed properties
-const filteredDesserts = computed(() => {
-  if (!searchQuery.value) return desserts.value
+const filteredProfiles = computed(() => {
+  if (!searchQuery.value) return profiles.value
 
   const query = searchQuery.value.toLowerCase()
-  return desserts.value.filter(dessert =>
-    dessert.name.toLowerCase().includes(query) ||
-    dessert.description.toLowerCase().includes(query)
+  return profiles.value.filter(profile =>
+    profile.name.toLowerCase().includes(query)
   )
 })
 
-const selectedDessert = computed(() => {
-  if (!selectedDessertId.value) return null
-  return desserts.value.find(d => d.id === selectedDessertId.value)
+const selectedProfile = computed(() => {
+  if (!selectedProfileId.value) return null
+  return profiles.value.find(p => p.id === selectedProfileId.value)
 })
 
 // Métodos
-function viewDessert(id) {
-  selectedDessertId.value = id
+function viewProfile(id) {
+  selectedProfileId.value = id
   currentView.value = 'detail'
   // Resetear el formulario de reseña
   newReview.value = {
-    author: '',
     rating: 0,
-    comment: ''
+    comment: '',
+    type: ['love', 'work']
   }
 }
 
 function addReview() {
-  if (!newReview.value.author || !newReview.value.rating || !newReview.value.comment) {
+  if (!newReview.value.rating || !newReview.value.comment || !newReview.value.type) {
     alert('Por favor, completa todos los campos de la reseña')
     return
   }
 
-  const dessert = desserts.value.find(d => d.id === selectedDessertId.value)
-  if (dessert) {
+  const profile = profiles.value.find(p => p.id === selectedProfileId.value)
+  if (profile) {
     // Crear nueva reseña
     const newReviewObj = {
       id: Date.now(), // ID único basado en timestamp
       author: newReview.value.author,
       rating: newReview.value.rating,
       comment: newReview.value.comment,
-      votes: 0
+      votes: 0,
+      type: newReview.value.type
     }
 
     // Añadir la reseña al postre
-    dessert.reviews.push(newReviewObj)
+    profile.reviews.push(newReviewObj)
 
     // Recalcular la puntuación media
-    const totalRating = dessert.reviews.reduce((sum, review) => sum + review.rating, 0)
-    dessert.averageRating = totalRating / dessert.reviews.length
+    const totalRating = profile.reviews.reduce((sum, review) => sum + review.rating, 0)
+    profile.averageRating = totalRating / profile.reviews.length
 
     // Resetear el formulario
     newReview.value = {
-      author: '',
       rating: 0,
-      comment: ''
+      comment: '',
+      type: ''
     }
 
     alert('¡Gracias por tu reseña!')
@@ -150,9 +144,9 @@ function addReview() {
 }
 
 function voteReview(reviewId, voteType) {
-  const dessert = desserts.value.find(d => d.id === selectedDessertId.value)
-  if (dessert) {
-    const review = dessert.reviews.find(r => r.id === reviewId)
+  const profile = profiles.value.find(p => p.id === selectedProfileId.value)
+  if (profile) {
+    const review = profile.reviews.find(r => r.id === reviewId)
     if (review) {
       if (voteType === 'up') {
         review.votes++
@@ -179,9 +173,21 @@ function voteReview(reviewId, voteType) {
       </div>
     </nav>
 
+    <section class="bg-pink-50 py-12">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-semibold mb-2">¿Saliste con un/a desastre emocional?</h2>
+        <p class="text-lg text-gray-700 mb-6">
+          Deja tu reseña anónima y ayuda a otr@s a evitarse un susto.
+        </p>
+        <p class="text-sm text-gray-500 italic">
+          (Reseñas anónimas. Todo el mundo tiene derecho a expresarse.)
+        </p>
+      </div>
+    </section>
+
     <!-- Main Content -->
     <main class="container mx-auto p-4">
-      <!-- Home View - List of Desserts -->
+      <!-- Home View - List of Profiles -->
       <div v-if="currentView === 'home'" class="space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="text-3xl font-bold text-amber-900">Perfiles Populares</h2>
@@ -193,37 +199,51 @@ function voteReview(reviewId, voteType) {
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="dessert in filteredDesserts" :key="dessert.id"
+          <div v-for="profile in filteredProfiles" :key="profile.id"
             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-            @click="viewDessert(dessert.id)">
+            @click="viewProfile(profile.id)">
             <div class="h-48 bg-blue-200 relative">
               <div class="absolute inset-0 flex items-center justify-center text-amber-800">
                 <UsersIcon size="64" />
               </div>
             </div>
             <div class="p-4">
-              <h3 class="text-xl font-bold text-amber-900">{{ dessert.name }}</h3>
+              <h3 class="text-xl font-bold text-amber-900">{{ profile.name }}</h3>
+
               <div class="flex items-center mt-2">
                 <div class="flex">
                   <StarIcon v-for="i in 5" :key="i" :class="[
                     'w-5 h-5',
-                    i <= Math.round(dessert.averageRating)
+                    i <= Math.round(profile.averageRating)
                       ? 'text-yellow-500 fill-current'
                       : 'text-gray-300'
                   ]" />
                 </div>
                 <span class="ml-2 text-gray-600">
-                  ({{ dessert.reviews.length }} reseñas)
+                  (❤️ {{ profile.reviews.length }} reseñas sentimentales)
                 </span>
               </div>
-              <p class="mt-2 text-gray-600 line-clamp-2">{{ dessert.description }}</p>
+              <div class="flex items-center mt-2">
+                <div class="flex">
+                  <StarIcon v-for="i in 5" :key="i" :class="[
+                    'w-5 h-5',
+                    i <= Math.round(profile.averageRating)
+                      ? 'text-yellow-500 fill-current'
+                      : 'text-gray-300'
+                  ]" />
+                </div>
+                <span class="ml-2 text-gray-600">
+                  (💼 {{ profile.reviews.length }} reseñas profesionales)
+                </span>
+              </div>
+              <p class="mt-2 text-gray-600 line-clamp-2">{{ profile.description }}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Dessert Detail View -->
-      <div v-else-if="currentView === 'detail' && selectedDessert" class="space-y-6">
+      <!-- Profile Detail View -->
+      <div v-else-if="currentView === 'detail' && selectedProfile" class="space-y-6">
         <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
           <ArrowLeftIcon class="mr-1" size="18" />
           Volver a la lista
@@ -236,21 +256,21 @@ function voteReview(reviewId, voteType) {
             </div>
           </div>
           <div class="p-6">
-            <h2 class="text-3xl font-bold text-amber-900">{{ selectedDessert.name }}</h2>
+            <h2 class="text-3xl font-bold text-amber-900">{{ selectedProfile.name }}</h2>
             <div class="flex items-center mt-2">
               <div class="flex">
                 <StarIcon v-for="i in 5" :key="i" :class="[
                   'w-5 h-5',
-                  i <= Math.round(selectedDessert.averageRating)
+                  i <= Math.round(selectedProfile.averageRating)
                     ? 'text-yellow-500 fill-current'
                     : 'text-gray-300'
                 ]" />
               </div>
               <span class="ml-2 text-gray-600">
-                ({{ selectedDessert.reviews.length }} reseñas)
+                ({{ selectedProfile.reviews.length }} reseñas)
               </span>
             </div>
-            <p class="mt-4 text-gray-700">{{ selectedDessert.description }}</p>
+            <p class="mt-4 text-gray-700">{{ selectedProfile.description }}</p>
 
             <div class="mt-8">
               <h3 class="text-2xl font-bold text-amber-900">Reseñas</h3>
@@ -258,6 +278,13 @@ function voteReview(reviewId, voteType) {
               <!-- Add Review Form -->
               <div class="mt-4 bg-amber-50 p-4 rounded-lg">
                 <h4 class="text-lg font-semibold text-amber-900">Añadir una reseña</h4>
+                <div class="mt-3">
+                  <label class="block text-sm font-medium text-gray-700">Tipo de reseña</label>
+                  <select v-model="newReview.type">
+                    <option value="love">❤️ Sentimental</option>
+                    <option value="work">💼 Profesional</option>
+                  </select>
+                </div>
                 <div class="mt-2">
                   <label class="block text-sm font-medium text-gray-700">Puntuación</label>
                   <div class="flex mt-1">
@@ -270,12 +297,6 @@ function voteReview(reviewId, voteType) {
                       ]" />
                     </button>
                   </div>
-                </div>
-                <div class="mt-3">
-                  <label class="block text-sm font-medium text-gray-700">Nombre</label>
-                  <input v-model="newReview.author" type="text"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-500 focus:ring-opacity-50"
-                    placeholder="Tu nombre" />
                 </div>
                 <div class="mt-3">
                   <label class="block text-sm font-medium text-gray-700">Comentario</label>
@@ -291,10 +312,11 @@ function voteReview(reviewId, voteType) {
 
               <!-- Reviews List -->
               <div class="mt-6 space-y-4">
-                <div v-for="review in selectedDessert.reviews" :key="review.id"
+                <div v-for="review in selectedProfile.reviews" :key="review.id"
                   class="bg-white p-4 rounded-lg shadow border border-gray-100">
                   <div class="flex justify-between items-start">
-                    <div>
+
+                    <div> <!-- Stars -->
                       <div class="flex items-center">
                         <div class="flex">
                           <StarIcon v-for="i in 5" :key="i" :class="[
@@ -304,8 +326,10 @@ function voteReview(reviewId, voteType) {
                               : 'text-gray-300'
                           ]" />
                         </div>
-                        <span class="ml-2 font-semibold">{{ review.author }}</span>
                       </div>
+                      <p class="text-sm text-gray-500 mt-1">
+                        {{ review.type === 'love' ? '❤️ Sentimental' : '💼 Profesional' }}
+                      </p>
                       <p class="mt-2 text-gray-700">{{ review.comment }}</p>
                     </div>
                     <div class="flex flex-col items-center">
