@@ -4,6 +4,7 @@ defineProps(['profile'])
 defineEmits(['click'])
 </script>
 
+
 <template>
   <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
     @click="$emit('click')">

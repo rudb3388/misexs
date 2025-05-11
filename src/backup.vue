@@ -1,6 +1,5 @@
 <script setup>
 import { ref, computed } from 'vue'
-// import { getProfiles, addProfile, updateProfile } from '../src/services/functions.js'
 import {
   Users as UsersIcon,
   Star as StarIcon,
@@ -9,9 +8,13 @@ import {
   ThumbsUp as ThumbsUpIcon,
   ThumbsDown as ThumbsDownIcon
 } from 'lucide-vue-next'
+import HeaderComponent from '../src/components/HeaderComponent.vue'
+/* import NavBar from '../src/components/NavBar.vue' */
+import FooterComponent from '../src/components/FooterComponent.vue'
+
+const currentView = ref('home')
 
 // Estado de la aplicación
-const currentView = ref('home')
 const searchQuery = ref('')
 const selectedProfileId = ref(null)
 const newReview = ref({
@@ -21,7 +24,7 @@ const newReview = ref({
 })
 
 // Datos de ejemplo
-const profiles = ref([
+/* const profiles = ref([
   {
     id: 1,
     name: 'José',
@@ -78,7 +81,8 @@ const profiles = ref([
       { id: 14, rating: 4, comment: 'Buen flan tradicional, me recordó al que hacía mi abuela.', votes: 8 }
     ]
   }
-])
+]) */
+
 
 // Computed properties
 const filteredProfiles = computed(() => {
@@ -118,7 +122,6 @@ function addReview() {
     // Crear nueva reseña
     const newReviewObj = {
       id: Date.now(), // ID único basado en timestamp
-      author: newReview.value.author,
       rating: newReview.value.rating,
       comment: newReview.value.comment,
       votes: 0,
@@ -160,33 +163,22 @@ function voteReview(reviewId, voteType) {
 
 <template>
   <div class="min-h-screen bg-blue-50">
-    <!-- Navbar -->
     <nav class="bg-blue-800 text-white p-4 shadow-md">
       <div class="container mx-auto flex justify-between items-center">
         <h1 class="text-2xl font-bold flex items-center">
-          <UsersIcon class="mr-2" />
           mypartner
         </h1>
-        <button @click="currentView = 'home'" class="px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors">
-          Iniciar sesión
-        </button>
+        <div class="flex space-x-6">
+          <button @click="currentView = 'info'">Info</button>
+          <button @click="currentView = 'contacto'">Contacto</button>
+        </div>
       </div>
     </nav>
-
-    <section class="bg-pink-50 py-12">
-      <div class="container mx-auto px-4 text-center">
-        <h2 class="text-3xl font-semibold mb-2">¿Saliste con un/a desastre emocional?</h2>
-        <p class="text-lg text-gray-700 mb-6">
-          Deja tu reseña anónima y ayuda a otr@s a evitarse un susto.
-        </p>
-        <p class="text-sm text-gray-500 italic">
-          (Reseñas anónimas. Todo el mundo tiene derecho a expresarse.)
-        </p>
-      </div>
-    </section>
+    <HeaderComponent />
 
     <!-- Main Content -->
     <main class="container mx-auto p-4">
+
       <!-- Home View - List of Profiles -->
       <div v-if="currentView === 'home'" class="space-y-6">
         <div class="flex justify-between items-center">
@@ -220,7 +212,7 @@ function voteReview(reviewId, voteType) {
                   ]" />
                 </div>
                 <span class="ml-2 text-gray-600">
-                  (❤️ {{ profile.reviews.length }} reseñas sentimentales)
+                  (❤️ {{profile.reviews.filter(r => r.type === 'sentimental').length}} reseñas sentimentales)
                 </span>
               </div>
               <div class="flex items-center mt-2">
@@ -233,10 +225,9 @@ function voteReview(reviewId, voteType) {
                   ]" />
                 </div>
                 <span class="ml-2 text-gray-600">
-                  (💼 {{ profile.reviews.length }} reseñas profesionales)
+                  (💼 {{profile.reviews.filter(r => r.type === 'profesional').length}} reseñas profesionales)
                 </span>
               </div>
-              <p class="mt-2 text-gray-600 line-clamp-2">{{ profile.description }}</p>
             </div>
           </div>
         </div>
@@ -348,17 +339,71 @@ function voteReview(reviewId, voteType) {
           </div>
         </div>
       </div>
+
+      <!-- Info View-->
+      <div v-else-if="currentView === 'info'"
+        class="min-h-screen bg-gradient-to-b from-pink-50 to-white text-gray-800 p-8">
+        <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
+          <ArrowLeftIcon class="mr-1" size="18" />
+          Volver a la lista
+        </button>
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-4xl font-extrabold mb-4 text-pink-600">¿Qué es MisExs?</h2>
+          <p class="text-lg mb-6 leading-relaxed">
+            MisExs es la primera plataforma donde puedes dejar <span class="font-semibold text-pink-500">reseñas
+              anónimas</span> sobre tus exparejas.
+            Con humor, respeto y sinceridad, ayudamos a crear un ecosistema más honesto en las relaciones. ❤️‍🔥
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mt-10">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
+              <h3 class="text-xl font-semibold mb-2 text-pink-600">💌 Anonimato garantizado</h3>
+              <p class="text-sm text-gray-600">Tu identidad está protegida. Tú cuentas tu versión y el sistema se
+                encarga de mantener la paz.</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
+              <h3 class="text-xl font-semibold mb-2 text-pink-600">🧠 Inteligencia emocional</h3>
+              <p class="text-sm text-gray-600">No se trata de vengarse, sino de comprender patrones, mejorar y compartir
+                aprendizajes.</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
+              <h3 class="text-xl font-semibold mb-2 text-pink-600">🧂 Un poco de salseo</h3>
+              <p class="text-sm text-gray-600">¡Sí! Aquí también se viene a leer y a soltar. Que no todo sea zen, ¿no?
+              </p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
+              <h3 class="text-xl font-semibold mb-2 text-pink-600">🔍 Transparencia relacional</h3>
+              <p class="text-sm text-gray-600">Lo que no se cuenta en Instagram, aquí sí se sabe. ¡Pero con
+                responsabilidad!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else-if="currentView === 'contacto'"
+        class="min-h-screen bg-gradient-to-b from-pink-50 to-white text-gray-800 p-8">
+        <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
+          <ArrowLeftIcon class="mr-1" size="18" />
+          Volver a la lista
+        </button>
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-4xl font-extrabold mb-4 text-pink-600">Contacto</h2>
+          <p class="text-lg mb-6 leading-relaxed">
+            Te puedes poner con nosotros <span class="font-semibold text-pink-500"> para cualquier asunto</span>, ya sea
+            sugerencias de la web, inversiones o simplemente agradecimientos por el servicio gratuito.
+          </p>
+
+          <div class="grid grid-cols-1 text-center mt-10">
+            <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
+              <h3 class="text-xl font-semibold mb-2 text-pink-600">💌 Email</h3>
+              <p class="text-sm text-gray-600">info@myparnter.info</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-blue-800 text-white p-4 mt-12">
-      <div class="container mx-auto text-center">
-        <p>© 2025 mypartner - Todos los derechos reservados</p>
-      </div>
-    </footer>
+    <FooterComponent />
   </div>
 </template>
-
-<style>
-/* Estilos adicionales si son necesarios */
-</style>
