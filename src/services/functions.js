@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 
 // Ejemplo para obtener los perfiles
-async function getProfiles() {
+export async function getProfiles() {
   const { data, error } = await supabase
     .from('profiles') // Cambia 'profiles' por tu nombre de tabla
     .select('*') // Selecciona todos los campos
@@ -14,9 +14,7 @@ async function getProfiles() {
   }
 }
 
-// getProfiles() // Llamada a la función para ver los perfiles
-
-async function addProfile() {
+export async function addProfile() {
   const { data, error } = await supabase
     .from('profiles')
     .insert([{ name: 'Juan', email: 'juan@correo.com' }])
@@ -27,9 +25,7 @@ async function addProfile() {
   }
 }
 
-// addProfile()
-
-async function updateProfile(id) {
+export async function updateProfile(id) {
   const { data, error } = await supabase.from('profiles').update({ name: 'Juanito' }).match({ id })
   if (error) {
     console.log('Error updating profile:', error)
@@ -37,5 +33,3 @@ async function updateProfile(id) {
     console.log('Profile updated:', data)
   }
 }
-
-// updateProfile(1) // Cambiar el nombre del perfil con id 1
