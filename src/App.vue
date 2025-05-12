@@ -14,15 +14,18 @@ import FooterComponent from '../src/components/FooterComponent.vue'
 
 const currentView = ref('home')
 
+/* import PocketBase from 'pocketbase'
+const pb = new PocketBase('http://127.0.0.1:8090/') */
+
 // Estado de la aplicación
 const searchQuery = ref('')
 const selectedProfileId = ref(null)
 const newReview = ref({
   rating: 0,
   comment: '',
-  type: ''
+  type: '',
+  votes: 0
 })
-
 // Datos de ejemplo
 const profiles = ref([
   {
@@ -30,8 +33,8 @@ const profiles = ref([
     name: 'José',
     averageRating: 4.5,
     reviews: [
-      { id: 1, rating: 5, comment: 'La mejor tarta de chocolate que he probado. El sabor es intenso y la textura perfecta.', votes: 12 },
-      { id: 2, rating: 4, comment: 'Muy buena, aunque un poco empalagosa para mi gusto.', votes: 5 }
+      { id: 1, profileId: 1324141, rating: 5, type: 'working', comment: 'La mejor tarta de chocolate que he probado. El sabor es intenso y la textura perfecta.', votes: 12 },
+      { id: 2, profileId: 7877274, rating: 4, type: 'sentimental', comment: 'Muy buena, aunque un poco empalagosa para mi gusto.', votes: 10 }
     ]
   },
   {
@@ -39,8 +42,8 @@ const profiles = ref([
     name: 'Paco',
     averageRating: 4.8,
     reviews: [
-      { id: 3, rating: 5, comment: 'Auténtico sabor italiano. El equilibrio entre el café y el mascarpone es perfecto.', votes: 8 },
-      { id: 4, rating: 5, comment: 'Increíble. Me transportó directamente a Italia.', votes: 10 },
+      { id: 3, profileId: 3494848, rating: 5, type: 'working', comment: 'Auténtico sabor italiano. El equilibrio entre el café y el mascarpone es perfecto.', votes: 8 },
+      { id: 4, profileId: 3828253, rating: 3, type: 'sentimental', comment: 'Increíble. Me transportó directamente a Italia.', votes: 10 },
       { id: 5, rating: 4, comment: 'Muy bueno, aunque prefiero un poco más de café.', votes: 3 }
     ]
   },
@@ -83,6 +86,10 @@ const profiles = ref([
   }
 ])
 
+/* onMounted(async () => {
+  profiles.value = await pb.collection('profiles').getFullList({ expand: 'reviews' });
+}); */
+
 
 // Computed properties
 const filteredProfiles = computed(() => {
@@ -107,7 +114,8 @@ function viewProfile(id) {
   newReview.value = {
     rating: 0,
     comment: '',
-    type: ''
+    type: '',
+    votes: 0
   }
 }
 
