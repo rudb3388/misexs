@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   Users as UsersIcon,
   Star as StarIcon,
@@ -9,13 +9,11 @@ import {
   ThumbsDown as ThumbsDownIcon
 } from 'lucide-vue-next'
 import HeaderComponent from '../src/components/HeaderComponent.vue'
-/* import NavBar from '../src/components/NavBar.vue' */
 import FooterComponent from '../src/components/FooterComponent.vue'
+import { supabase } from './services/supabase'
+const profilesSup = ref([])
 
 const currentView = ref('home')
-
-/* import PocketBase from 'pocketbase'
-const pb = new PocketBase('http://127.0.0.1:8090/') */
 
 // Estado de la aplicación
 const searchQuery = ref('')
@@ -27,7 +25,7 @@ const newReview = ref({
   votes: 0
 })
 // Datos de ejemplo
-const profiles = ref([
+/* const profiles = ref([
   {
     id: 1,
     name: 'José',
@@ -84,26 +82,30 @@ const profiles = ref([
       { id: 14, rating: 4, comment: 'Buen flan tradicional, me recordó al que hacía mi abuela.', votes: 8 }
     ]
   }
-])
+]) */
 
-/* onMounted(async () => {
-  profiles.value = await pb.collection('profiles').getFullList({ expand: 'reviews' });
-}); */
+async function getProfilesSup() {
+  const { data } = await supabase.from('profiles').select()
+  profilesSup.value = data;
+}
 
+onMounted(() => {
+  getProfilesSup()
+})
 
 // Computed properties
 const filteredProfiles = computed(() => {
-  if (!searchQuery.value) return profiles.value
+  if (!searchQuery.value) return profilesSup.value
 
   const query = searchQuery.value.toLowerCase()
-  return profiles.value.filter(profile =>
-    profile.name.toLowerCase().includes(query)
+  return profilesSup.value.filter(profileSup =>
+    profileSup.name.toLowerCase().includes(query)
   )
 })
 
 const selectedProfile = computed(() => {
   if (!selectedProfileId.value) return null
-  return profiles.value.find(p => p.id === selectedProfileId.value)
+  return profilesSup.value.find(p => p.id === selectedProfileId.value)
 })
 
 // Métodos
@@ -125,8 +127,8 @@ function addReview() {
     return
   }
 
-  const profile = profiles.value.find(p => p.id === selectedProfileId.value)
-  if (profile) {
+  const profileSup = profilesSup.value.find(p => p.id === selectedProfileId.value)
+  if (profileSup) {
     // Crear nueva reseña
     const newReviewObj = {
       id: Date.now(), // ID único basado en timestamp
@@ -137,17 +139,18 @@ function addReview() {
     }
 
     // Añadir la reseña al postre
-    profile.reviews.push(newReviewObj)
+    profileSup.reviews.push(newReviewObj)
 
     // Recalcular la puntuación media
-    const totalRating = profile.reviews.reduce((sum, review) => sum + review.rating, 0)
-    profile.averageRating = totalRating / profile.reviews.length
+    const totalRating = profileSup.reviews.reduce((sum, review) => sum + review.rating, 0)
+    profileSup.averageRating = totalRating / profileSup.reviews.length
 
     // Resetear el formulario
     newReview.value = {
       rating: 0,
       comment: '',
-      type: ''
+      type: '',
+      votes: 0,
     }
 
     alert('¡Gracias por tu reseña!')
@@ -155,9 +158,9 @@ function addReview() {
 }
 
 function voteReview(reviewId, voteType) {
-  const profile = profiles.value.find(p => p.id === selectedProfileId.value)
-  if (profile) {
-    const review = profile.reviews.find(r => r.id === reviewId)
+  const profileSup = profilesSup.value.find(p => p.id === selectedProfileId.value)
+  if (profileSup) {
+    const review = profileSup.reviews.find(r => r.id === reviewId)
     if (review) {
       if (voteType === 'up') {
         review.votes++
@@ -199,41 +202,29 @@ function voteReview(reviewId, voteType) {
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="profile in filteredProfiles" :key="profile.id"
+          <div v-for="profileSup in filteredProfiles" :key="profileSup.id"
             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-            @click="viewProfile(profile.id)">
+            @click="viewProfile(profileSup.id)">
             <div class="h-48 bg-blue-200 relative">
               <div class="absolute inset-0 flex items-center justify-center text-amber-800">
                 <UsersIcon size="64" />
               </div>
             </div>
             <div class="p-4">
-              <h3 class="text-xl font-bold text-amber-900">{{ profile.name }}</h3>
+              <h3 class="text-xl font-bold text-amber-900">{{ profileSup.name }}, {{ profileSup.age }}</h3>
+              <h4 class="text-sm mt-5 font-bold text-amber-900">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
                 <div class="flex">
                   <StarIcon v-for="i in 5" :key="i" :class="[
                     'w-5 h-5',
-                    i <= Math.round(profile.averageRating)
+                    i <= Math.round(profileSup.averageRating)
                       ? 'text-yellow-500 fill-current'
                       : 'text-gray-300'
                   ]" />
                 </div>
                 <span class="ml-2 text-gray-600">
-                  (❤️ {{profile.reviews.filter(r => r.type === 'sentimental').length}} reseñas sentimentales)
-                </span>
-              </div>
-              <div class="flex items-center mt-2">
-                <div class="flex">
-                  <StarIcon v-for="i in 5" :key="i" :class="[
-                    'w-5 h-5',
-                    i <= Math.round(profile.averageRating)
-                      ? 'text-yellow-500 fill-current'
-                      : 'text-gray-300'
-                  ]" />
-                </div>
-                <span class="ml-2 text-gray-600">
-                  (💼 {{profile.reviews.filter(r => r.type === 'profesional').length}} reseñas profesionales)
+                  (❤️ {{ profileSup.averageRating }} reseñas sentimentales)
                 </span>
               </div>
             </div>
@@ -256,6 +247,7 @@ function voteReview(reviewId, voteType) {
           </div>
           <div class="p-6">
             <h2 class="text-3xl font-bold text-amber-900">{{ selectedProfile.name }}</h2>
+            <h2 class="text-3xl font-bold text-amber-900">{{ selectedProfile.location }}</h2>
             <div class="flex items-center mt-2">
               <div class="flex">
                 <StarIcon v-for="i in 5" :key="i" :class="[
@@ -269,7 +261,6 @@ function voteReview(reviewId, voteType) {
                 ({{ selectedProfile.reviews.length }} reseñas)
               </span>
             </div>
-            <p class="mt-4 text-gray-700">{{ selectedProfile.description }}</p>
 
             <div class="mt-8">
               <h3 class="text-2xl font-bold text-amber-900">Reseñas</h3>
