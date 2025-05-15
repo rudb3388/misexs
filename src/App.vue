@@ -24,69 +24,24 @@ const newReview = ref({
   type: '',
   votes: 0
 })
-// Datos de ejemplo
-/* const profiles = ref([
-  {
-    id: 1,
-    name: 'José',
-    averageRating: 4.5,
-    reviews: [
-      { id: 1, profileId: 1324141, rating: 5, type: 'working', comment: 'La mejor tarta de chocolate que he probado. El sabor es intenso y la textura perfecta.', votes: 12 },
-      { id: 2, profileId: 7877274, rating: 4, type: 'sentimental', comment: 'Muy buena, aunque un poco empalagosa para mi gusto.', votes: 10 }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Paco',
-    averageRating: 4.8,
-    reviews: [
-      { id: 3, profileId: 3494848, rating: 5, type: 'working', comment: 'Auténtico sabor italiano. El equilibrio entre el café y el mascarpone es perfecto.', votes: 8 },
-      { id: 4, profileId: 3828253, rating: 3, type: 'sentimental', comment: 'Increíble. Me transportó directamente a Italia.', votes: 10 },
-      { id: 5, rating: 4, comment: 'Muy bueno, aunque prefiero un poco más de café.', votes: 3 }
-    ]
-  },
-  {
-    id: 3,
-    name: 'María',
-    averageRating: 4.2,
-    reviews: [
-      { id: 6, rating: 4, comment: 'Muy cremoso y con buen sabor a fresa, aunque la base podría ser más crujiente.', votes: 6 },
-      { id: 7, rating: 5, comment: 'El equilibrio perfecto entre dulce y ácido. Las fresas estaban muy frescas.', votes: 9 }
-    ]
-  },
-  {
-    id: 4,
-    name: 'Laura',
-    averageRating: 4.7,
-    reviews: [
-      { id: 8, rating: 5, comment: 'El contraste entre la crema suave y el caramelo crujiente es espectacular.', votes: 15 },
-      { id: 9, rating: 4, comment: 'Muy buena, aunque prefiero un poco más de vainilla en la crema.', votes: 7 }
-    ]
-  },
-  {
-    id: 5,
-    name: 'Sofía',
-    averageRating: 4.9,
-    reviews: [
-      { id: 10, rating: 5, comment: 'Espectacular. El chocolate fundido en el interior es pura magia.', votes: 20 },
-      { id: 11, rating: 5, comment: 'La combinación con el helado de vainilla es perfecta. No puedo pedir más.', votes: 18 },
-      { id: 12, rating: 5, comment: 'El mejor coulant que he probado en mi vida.', votes: 14 }
-    ]
-  },
-  {
-    id: 6,
-    name: 'Leonardo',
-    averageRating: 4.0,
-    reviews: [
-      { id: 13, rating: 4, comment: 'Muy cremoso y con buen sabor, aunque un poco simple.', votes: 5 },
-      { id: 14, rating: 4, comment: 'Buen flan tradicional, me recordó al que hacía mi abuela.', votes: 8 }
-    ]
-  }
-]) */
+
+const selectedImageFile = ref(null)
 
 async function getProfilesSup() {
-  const { data } = await supabase.from('profiles').select()
+  const { data, error } = await supabase.from('profiles').select('*, reviews(*)')
   profilesSup.value = data;
+
+  if (error) {
+    console.error('Error al obtener perfiles:', error)
+    return
+  }
+
+
+  // Aquí procesamos los datos para asegurarnos de que tengan la forma correcta
+  profilesSup.value = data.map(profile => ({
+    ...profile,
+    reviews: profile.reviews || []  // Aseguramos que siempre haya un array de reviews, aunque esté vacío
+  }))
 }
 
 onMounted(() => {
@@ -108,6 +63,81 @@ const selectedProfile = computed(() => {
   return profilesSup.value.find(p => p.id === selectedProfileId.value)
 })
 
+const newProfile = ref({
+  name: '',
+  age: '',
+  location: '',
+})
+
+// Método para enviar el perfil al backend
+async function submitProfile() {
+  if (!newProfile.value.name || !newProfile.value.age || !newProfile.value.location || !selectedImageFile.value) {
+    alert('Por favor, completa todos los campos')
+    return
+  }
+
+  const uploadedPath = await uploadImage(selectedImageFile.value)
+  if (!uploadedPath) return
+
+  const publicURL = supabase.storage.from('profiles-images').getPublicUrl(uploadedPath).data.publicUrl
+
+  const { error } = await supabase
+    .from('profiles')
+    .insert([
+      {
+        name: newProfile.value.name,
+        age: newProfile.value.age,
+        location: newProfile.value.location,
+        averageRating: 0, // Esto lo puedes definir como 0 o calcularlo después,
+        pic: publicURL,
+      }
+    ])
+
+  if (error) {
+    console.error('Error al subir el perfil:', error)
+    alert('Hubo un error al subir el perfil')
+  } else {
+    alert('Perfil subido con éxito!')
+    newProfile.value = { name: '', age: '', location: '' } // Resetear formulario
+    currentView.value = 'home' // Volver a la vista principal
+    selectedImageFile.value = null
+    getProfilesSup() // Actualizar la lista de perfiles
+  }
+}
+
+async function uploadImage(file) {
+  const username = newProfile.value.name.toLowerCase().replace(/\s+/g, '-') // Ej: "Pepito Grillo" → "pepito-grillo"
+  const fileExt = file.name.split('.').pop()
+  const uniqueSuffix = Date.now() // o incluso un UUID si quieres máxima seguridad
+  const fileName = `${username}-${uniqueSuffix}.${fileExt}`
+  const filePath = `profiles/${fileName}`
+
+  const { error } = await supabase.storage
+    .from('profiles-images')
+    .upload(filePath, file)
+
+  if (!file || !file.name) {
+    console.error('Archivo inválido o sin nombre:', file)
+    alert('El archivo de imagen es inválido')
+    return null
+  }
+
+  if (error) {
+    console.error('Error al subir imagen:', error.message)
+    alert('No se pudo subir la imagen.')
+    return null
+  }
+
+  return filePath
+
+}
+
+function handleFileChange(event) {
+  selectedImageFile.value = event.target.files[0]
+}
+
+
+
 // Métodos
 function viewProfile(id) {
   selectedProfileId.value = id
@@ -121,7 +151,7 @@ function viewProfile(id) {
   }
 }
 
-function addReview() {
+async function addReview() {
   if (!newReview.value.rating || !newReview.value.comment || !newReview.value.type) {
     alert('Por favor, completa todos los campos de la reseña')
     return
@@ -131,15 +161,22 @@ function addReview() {
   if (profileSup) {
     // Crear nueva reseña
     const newReviewObj = {
-      id: Date.now(), // ID único basado en timestamp
+      profile_id: selectedProfileId.value,
       rating: newReview.value.rating,
       comment: newReview.value.comment,
-      votes: 0,
-      type: newReview.value.type
+      type: newReview.value.type,
+      votes: 0
     }
 
-    // Añadir la reseña al postre
-    profileSup.reviews.push(newReviewObj)
+    const { error } = await supabase
+      .from('reviews')
+      .insert([newReviewObj])
+
+    if (error) {
+      console.error('Error al subir reseña:', error)
+      alert('No se pudo subir la reseña')
+      return
+    }
 
     // Recalcular la puntuación media
     const totalRating = profileSup.reviews.reduce((sum, review) => sum + review.rating, 0)
@@ -152,36 +189,48 @@ function addReview() {
       type: '',
       votes: 0,
     }
+    getProfilesSup()
 
     alert('¡Gracias por tu reseña!')
   }
 }
 
-function voteReview(reviewId, voteType) {
+async function voteReview(reviewId, voteType) {
   const profileSup = profilesSup.value.find(p => p.id === selectedProfileId.value)
-  if (profileSup) {
-    const review = profileSup.reviews.find(r => r.id === reviewId)
-    if (review) {
-      if (voteType === 'up') {
-        review.votes++
-      } else if (voteType === 'down' && review.votes > 0) {
-        review.votes--
-      }
-    }
+  if (!profileSup) return
+
+  const review = profileSup.reviews.find(r => r.id === reviewId)
+  if (!review) return
+
+  if (voteType === 'up') {
+    review.votes++
+  } else if (voteType === 'down' && review.votes > 0) {
+    review.votes--
+  }
+
+  const { error } = await supabase
+    .from('reviews')
+    .update({ votes: review.votes })
+    .eq('id', reviewId)
+
+  if (error) {
+    console.error('Error al votar la reseña:', error)
   }
 }
+
 </script>
 
 <template>
   <div class="min-h-screen bg-blue-50">
     <nav class="bg-blue-800 text-white p-4 shadow-md">
       <div class="container mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold flex items-center">
+        <h1 @click="currentView = 'home'" class="text-2xl cursor-pointer font-bold flex items-center">
           mypartner
         </h1>
         <div class="flex space-x-6">
-          <button @click="currentView = 'info'">Info</button>
-          <button @click="currentView = 'contacto'">Contacto</button>
+          <button class="cursor-pointer" @click="currentView = 'createProfile'">Subir Perfil</button>
+          <button class="cursor-pointer" @click="currentView = 'info'">Info</button>
+          <button class="cursor-pointer" @click="currentView = 'contacto'">Contacto</button>
         </div>
       </div>
     </nav>
@@ -206,7 +255,9 @@ function voteReview(reviewId, voteType) {
             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
             @click="viewProfile(profileSup.id)">
             <div class="h-48 bg-blue-200 relative">
-              <div class="absolute inset-0 flex items-center justify-center text-amber-800">
+              <img v-if="profileSup.pic" :src="profileSup.pic" alt="Foto de perfil"
+                class="object-cover w-full h-full" />
+              <div v-else class="absolute inset-0 flex items-center justify-center text-amber-800">
                 <UsersIcon size="64" />
               </div>
             </div>
@@ -224,7 +275,7 @@ function voteReview(reviewId, voteType) {
                   ]" />
                 </div>
                 <span class="ml-2 text-gray-600">
-                  (❤️ {{ profileSup.averageRating }} reseñas sentimentales)
+                  (❤️ {{ profileSup.reviews.length }} reseñas || ⭐ {{ profileSup.averageRating.toFixed(1) }})
                 </span>
               </div>
             </div>
@@ -232,16 +283,57 @@ function voteReview(reviewId, voteType) {
         </div>
       </div>
 
+      <!-- Nueva Vista: Crear Perfil -->
+      <div v-if="currentView === 'createProfile'" class="space-y-6">
+        <button @click="currentView = 'home'"
+          class="flex cursor-pointer items-center text-amber-700 hover:text-amber-900">
+          <ArrowLeftIcon class="mr-1" size="18" />
+          Volver a la lista
+        </button>
+        <h2 class="text-3xl font-bold text-amber-900">Crear Perfil</h2>
+
+        <!-- Formulario para crear un perfil -->
+        <form @submit.prevent="submitProfile" class="bg-white p-6 rounded-lg shadow-md">
+          <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
+            <input id="name" v-model="newProfile.name" type="text" required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md" />
+          </div>
+          <div class="mb-4">
+            <label for="age" class="block text-sm font-medium text-gray-700">Edad</label>
+            <input id="age" v-model="newProfile.age" type="number" required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md" />
+          </div>
+          <div class="mb-4">
+            <label for="location" class="block text-sm font-medium text-gray-700">Ubicación</label>
+            <input id="location" v-model="newProfile.location" type="text" required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md" />
+          </div>
+          <div class="mb-4">
+            <label for="image" class="block text-sm font-medium text-gray-700">Imagen</label>
+            <input id="image" type="file" @change="handleFileChange" required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md" />
+          </div>
+          <button type="submit" class="bg-amber-600 text-white px-4 py-2 rounded-md hover:bg-amber-700">Subir
+            Perfil</button>
+        </form>
+      </div>
+
+
       <!-- Profile Detail View -->
       <div v-else-if="currentView === 'detail' && selectedProfile" class="space-y-6">
-        <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
+        <button @click="currentView = 'home'"
+          class="flex cursor-pointer items-center text-amber-700 hover:text-amber-900">
           <ArrowLeftIcon class="mr-1" size="18" />
           Volver a la lista
         </button>
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
           <div class="h-64 bg-amber-200 relative">
-            <div class="absolute inset-0 flex items-center justify-center text-amber-800">
+            <div v-if="selectedProfile.pic" class="absolute inset-0">
+              <img :src="selectedProfile.pic" alt="Foto de perfil" class="object-cover w-full h-full" />
+            </div>
+            <div v-else class="absolute inset-0 flex items-center justify-center text-amber-800">
               <UsersIcon size="96" />
             </div>
           </div>
@@ -342,7 +434,8 @@ function voteReview(reviewId, voteType) {
       <!-- Info View-->
       <div v-else-if="currentView === 'info'"
         class="min-h-screen bg-gradient-to-b from-pink-50 to-white text-gray-800 p-8">
-        <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
+        <button @click="currentView = 'home'"
+          class="flex cursor-pointer items-center text-amber-700 hover:text-amber-900">
           <ArrowLeftIcon class="mr-1" size="18" />
           Volver a la lista
         </button>
@@ -381,7 +474,8 @@ function voteReview(reviewId, voteType) {
 
       <div v-else-if="currentView === 'contacto'"
         class="min-h-screen bg-gradient-to-b from-pink-50 to-white text-gray-800 p-8">
-        <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
+        <button @click="currentView = 'home'"
+          class="flex items-center cursor-pointer text-amber-700 hover:text-amber-900">
           <ArrowLeftIcon class="mr-1" size="18" />
           Volver a la lista
         </button>
