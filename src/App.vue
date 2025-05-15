@@ -26,6 +26,10 @@ const newReview = ref({
   votes: 0
 })
 
+const email = ref('')
+const password = ref('')
+const isSigningUp = ref(false)
+
 const selectedImageFile = ref(null)
 
 async function getProfilesSup() {
@@ -47,6 +51,10 @@ async function getProfilesSup() {
 
 onMounted(() => {
   getProfilesSup()
+  user.value = supabase.auth.getUser() // o supabase.auth.session().user
+  supabase.auth.onAuthStateChange((_event, session) => {
+    user.value = session?.user || null
+  })
 })
 
 // Computed properties
@@ -265,11 +273,56 @@ async function voteReview(reviewId, voteType) {
   }
 }
 
-async function loginWithGoogle() {
+const user = ref(null)
+
+/* async function loginWithGoogle() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
   })
   if (error) console.error('Error login:', error.message)
+} */
+async function signUp(email, password) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  })
+  if (error) {
+    alert('Error al registrar: ' + error.message)
+    return null
+  }
+  alert('¡Registro exitoso! Revisa tu email para verificar tu cuenta.')
+  return data
+}
+
+async function signIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+  if (error) {
+    alert('Error al iniciar sesión: ' + error.message)
+    return null
+  }
+  alert('¡Bienvenido de nuevo!')
+  currentView.value = 'home' // O lo que sea
+  return data
+}
+
+/* async function signOut() {
+  const { error } = await supabase.auth.signOut()
+  if (error) console.error('Error al cerrar sesión:', error.message)
+  else alert('Sesión cerrada')
+  // Aquí limpia variables si necesitas
+} */
+
+async function handleEmailAuth() {
+  if (isSigningUp.value) {
+    await signUp(email.value, password.value)
+  } else {
+    await signIn(email.value, password.value)
+  }
+  email.value = ''
+  password.value = ''
 }
 
 
@@ -339,19 +392,27 @@ async function loginWithGoogle() {
         </div>
       </div>
       <!-- Login View -->
-      <div v-if="currentView === 'login'" class="text-center space-y-4">
-        <button @click="currentView = 'home'"
-          class="flex cursor-pointer items-center text-amber-700 hover:text-amber-900">
-          <ArrowLeftIcon class="mr-1" size="18" />
-          Volver a la lista
+      <div v-if="currentView === 'login'">
+        <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
+          <ArrowLeftIcon class="mr-1" size="18" /> Volver a la lista
         </button>
-        <h2 class="text-2xl font-bold text-amber-900">Iniciar Sesión</h2>
-        <p class="text-gray-700">Inicia sesión para subir perfiles o dejar reseñas.</p>
-        <button @click="loginWithGoogle"
-          class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition">
-          Iniciar sesión con Google
+        <h2 class="text-2xl font-bold text-amber-900">Iniciar Sesión / Registrarse</h2>
+
+        <form @submit.prevent="handleEmailAuth" class="space-y-4 mt-4">
+          <input v-model="email" type="email" placeholder="Email" required class="w-full p-2 border rounded" />
+          <input v-model="password" type="password" placeholder="Contraseña" required
+            class="w-full p-2 border rounded" />
+
+          <button type="submit" class="bg-amber-600 text-white px-6 py-2 rounded hover:bg-amber-700">
+            {{ isSigningUp ? 'Registrarse' : 'Iniciar Sesión' }}
+          </button>
+        </form>
+
+        <button @click="isSigningUp = !isSigningUp" class="mt-2 text-blue-500 underline">
+          {{ isSigningUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate' }}
         </button>
       </div>
+
       <!-- Nueva Vista: Crear Perfil -->
       <div v-if="currentView === 'createProfile'" class="space-y-6">
         <button @click="currentView = 'home'"
