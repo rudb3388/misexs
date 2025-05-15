@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+// import { useUserStore } from './store/user'
 import {
   Users as UsersIcon,
   Star as StarIcon,
@@ -112,15 +113,15 @@ async function uploadImage(file) {
   const fileName = `${username}-${uniqueSuffix}.${fileExt}`
   const filePath = `profiles/${fileName}`
 
-  const { error } = await supabase.storage
-    .from('profiles-images')
-    .upload(filePath, file)
-
   if (!file || !file.name) {
     console.error('Archivo inválido o sin nombre:', file)
     alert('El archivo de imagen es inválido')
     return null
   }
+
+  const { error } = await supabase.storage
+    .from('profiles-images')
+    .upload(filePath, file)
 
   if (error) {
     console.error('Error al subir imagen:', error.message)
@@ -136,11 +137,39 @@ function handleFileChange(event) {
   selectedImageFile.value = event.target.files[0]
 }
 
-
-
-// Métodos
-function viewProfile(id) {
+async function viewProfile(id) {
   selectedProfileId.value = id
+  // Incrementar contador de vistas en Supabase
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('views')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    console.error('Error al obtener vistas:', error)
+    return
+  }
+
+  const currentViews = data.views || 0
+
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ views: currentViews + 1 })
+    .eq('id', id)
+
+  if (updateError) {
+    console.error('Error al actualizar vistas:', updateError)
+  } else {
+    console.log(`Vistas actualizadas: ${currentViews + 1}`)
+
+    // ⚡️ Actualizar localmente el número de vistas para que se muestre al momento
+    const profile = profilesSup.value.find(p => p.id === id)
+    if (profile) {
+      profile.views = currentViews + 1
+    }
+  }
+
   currentView.value = 'detail'
   // Resetear el formulario de reseña
   newReview.value = {
@@ -196,27 +225,53 @@ async function addReview() {
 }
 
 async function voteReview(reviewId, voteType) {
-  const profileSup = profilesSup.value.find(p => p.id === selectedProfileId.value)
-  if (!profileSup) return
+  // 1. Traer la reseña directamente de Supabase (más seguro)
+  const { data: review, error: fetchError } = await supabase
+    .from('reviews')
+    .select('votes')
+    .eq('id', reviewId)
+    .single()
 
-  const review = profileSup.reviews.find(r => r.id === reviewId)
-  if (!review) return
+  if (fetchError || !review) {
+    console.error('No se pudo obtener la reseña:', fetchError)
+    return
+  }
+
+  let newVotes = review.votes || 0
 
   if (voteType === 'up') {
-    review.votes++
-  } else if (voteType === 'down' && review.votes > 0) {
-    review.votes--
+    newVotes++
+  } else if (voteType === 'down' && newVotes > 0) {
+    newVotes--
   }
 
-  const { error } = await supabase
+  const { error: updateError } = await supabase
     .from('reviews')
-    .update({ votes: review.votes })
+    .update({ votes: newVotes })
     .eq('id', reviewId)
 
-  if (error) {
-    console.error('Error al votar la reseña:', error)
+  if (updateError) {
+    console.error('Error al guardar el voto:', updateError)
+  } else {
+    console.log('Voto guardado con éxito')
+  }
+
+  const profileSup = profilesSup.value.find(p => p.id === selectedProfileId.value)
+  if (profileSup) {
+    const reviewInList = profileSup.reviews.find(r => r.id === reviewId)
+    if (reviewInList) {
+      reviewInList.votes = newVotes // actualiza la vista al momento
+    }
   }
 }
+
+async function loginWithGoogle() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+  })
+  if (error) console.error('Error login:', error.message)
+}
+
 
 </script>
 
@@ -228,6 +283,7 @@ async function voteReview(reviewId, voteType) {
           mypartner
         </h1>
         <div class="flex space-x-6">
+          <button class="cursor-pointer" @click="currentView = 'login'">Login</button>
           <button class="cursor-pointer" @click="currentView = 'createProfile'">Subir Perfil</button>
           <button class="cursor-pointer" @click="currentView = 'info'">Info</button>
           <button class="cursor-pointer" @click="currentView = 'contacto'">Contacto</button>
@@ -282,7 +338,20 @@ async function voteReview(reviewId, voteType) {
           </div>
         </div>
       </div>
-
+      <!-- Login View -->
+      <div v-if="currentView === 'login'" class="text-center space-y-4">
+        <button @click="currentView = 'home'"
+          class="flex cursor-pointer items-center text-amber-700 hover:text-amber-900">
+          <ArrowLeftIcon class="mr-1" size="18" />
+          Volver a la lista
+        </button>
+        <h2 class="text-2xl font-bold text-amber-900">Iniciar Sesión</h2>
+        <p class="text-gray-700">Inicia sesión para subir perfiles o dejar reseñas.</p>
+        <button @click="loginWithGoogle"
+          class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition">
+          Iniciar sesión con Google
+        </button>
+      </div>
       <!-- Nueva Vista: Crear Perfil -->
       <div v-if="currentView === 'createProfile'" class="space-y-6">
         <button @click="currentView = 'home'"
@@ -327,6 +396,7 @@ async function voteReview(reviewId, voteType) {
           <ArrowLeftIcon class="mr-1" size="18" />
           Volver a la lista
         </button>
+        <p class="text-sm text-gray-500">👀 Visto {{ selectedProfile.views }} veces</p>
 
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
           <div class="h-64 bg-amber-200 relative">
