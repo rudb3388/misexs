@@ -329,41 +329,57 @@ async function handleEmailAuth() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-blue-50">
-    <nav class="bg-blue-800 text-white p-4 shadow-md">
-      <div class="container mx-auto flex justify-between items-center">
-        <h1 @click="currentView = 'home'" class="text-2xl cursor-pointer font-bold flex items-center">
+  <div class="min-h-screen w-full overflow-x-hidden">
+    <nav class="bg-blue-800 text-white shadow-md px-6 py-4 rounded-b-2xl rounded-t-2xl">
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <h1 @click="currentView = 'home'"
+          class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
           mypartner
         </h1>
-        <div class="flex space-x-6">
-          <button class="cursor-pointer" @click="currentView = 'login'">Login</button>
-          <button class="cursor-pointer" @click="currentView = 'createProfile'">Subir Perfil</button>
-          <button class="cursor-pointer" @click="currentView = 'info'">Info</button>
-          <button class="cursor-pointer" @click="currentView = 'contacto'">Contacto</button>
+        <div class="flex gap-4">
+          <button @click="currentView = 'login'"
+            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Login
+          </button>
+          <button @click="currentView = 'createProfile'"
+            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Subir Perfil
+          </button>
+          <button @click="currentView = 'info'"
+            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Info
+          </button>
+          <button @click="currentView = 'contacto'"
+            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Contacto
+          </button>
         </div>
       </div>
     </nav>
+
     <HeaderComponent />
 
     <!-- Main Content -->
-    <main class="container mx-auto p-4">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
       <!-- Home View - List of Profiles -->
       <div v-if="currentView === 'home'" class="space-y-6">
         <div class="flex justify-between items-center">
-          <h2 class="text-3xl font-bold text-amber-900">Perfiles Populares</h2>
+          <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">Perfiles Populares</h2>
+
           <div class="relative">
             <SearchIcon class="absolute left-3 top-3 text-gray-500" size="18" />
             <input v-model="searchQuery" type="text" placeholder="Buscar perfil por nombre"
-              class="pl-10 pr-4 py-2 rounded-lg border border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" />
+
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div v-for="profileSup in filteredProfiles" :key="profileSup.id"
-            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-            @click="viewProfile(profileSup.id)">
-            <div class="h-48 bg-blue-200 relative">
+          <div v-for="profileSup in filteredProfiles" :key="profileSup.id" @click="viewProfile(profileSup.id)"
+            class="bg-white rounded-xl shadow hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden group cursor-pointer">
+            <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 relative">
+
               <img v-if="profileSup.pic" :src="profileSup.pic" alt="Foto de perfil"
                 class="object-cover w-full h-full" />
               <div v-else class="absolute inset-0 flex items-center justify-center text-amber-800">
@@ -371,8 +387,9 @@ async function handleEmailAuth() {
               </div>
             </div>
             <div class="p-4">
-              <h3 class="text-xl font-bold text-amber-900">{{ profileSup.name }}, {{ profileSup.age }}</h3>
-              <h4 class="text-sm mt-5 font-bold text-amber-900">{{ profileSup.location }}</h4>
+              <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
+              }}, {{ profileSup.age }}</h3>
+              <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
                 <div class="flex">
@@ -398,12 +415,13 @@ async function handleEmailAuth() {
         </button>
         <h2 class="text-2xl font-bold text-amber-900">Iniciar Sesión / Registrarse</h2>
 
-        <form @submit.prevent="handleEmailAuth" class="space-y-4 mt-4">
+        <form @submit.prevent="handleEmailAuth" class="bg-white rounded-xl shadow p-6 space-y-5">
           <input v-model="email" type="email" placeholder="Email" required class="w-full p-2 border rounded" />
           <input v-model="password" type="password" placeholder="Contraseña" required
             class="w-full p-2 border rounded" />
 
-          <button type="submit" class="bg-amber-600 text-white px-6 py-2 rounded hover:bg-amber-700">
+          <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
             {{ isSigningUp ? 'Registrarse' : 'Iniciar Sesión' }}
           </button>
         </form>
@@ -493,7 +511,8 @@ async function handleEmailAuth() {
                 <h4 class="text-lg font-semibold text-amber-900">Añadir una reseña</h4>
                 <div class="mt-3">
                   <label class="block text-sm font-medium text-gray-700">Tipo de reseña</label>
-                  <select v-model="newReview.type">
+                  <select v-model="newReview.type"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500">
                     <option value="love">❤️ Sentimental</option>
                     <option value="work">💼 Profesional</option>
                   </select>
@@ -503,11 +522,10 @@ async function handleEmailAuth() {
                   <div class="flex mt-1">
                     <button v-for="i in 5" :key="i" @click="newReview.rating = i" class="focus:outline-none">
                       <StarIcon :class="[
-                        'w-6 h-6',
-                        i <= newReview.rating
-                          ? 'text-yellow-500 fill-current'
-                          : 'text-gray-300'
+                        'w-6 h-6 cursor-pointer transition-colors duration-200',
+                        i <= newReview.rating ? 'text-yellow-500' : 'text-gray-300'
                       ]" />
+
                     </button>
                   </div>
                 </div>
@@ -563,8 +581,7 @@ async function handleEmailAuth() {
       </div>
 
       <!-- Info View-->
-      <div v-else-if="currentView === 'info'"
-        class="min-h-screen bg-gradient-to-b from-pink-50 to-white text-gray-800 p-8">
+      <div v-else-if="currentView === 'info'" class="min-h-screen overflow-x-hidden bg-white text-gray-800 p-8">
         <button @click="currentView = 'home'"
           class="flex cursor-pointer items-center text-amber-700 hover:text-amber-900">
           <ArrowLeftIcon class="mr-1" size="18" />
