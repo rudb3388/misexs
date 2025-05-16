@@ -308,12 +308,12 @@ async function signIn(email, password) {
   return data
 }
 
-/* async function signOut() {
+async function logout() {
   const { error } = await supabase.auth.signOut()
   if (error) console.error('Error al cerrar sesión:', error.message)
   else alert('Sesión cerrada')
   // Aquí limpia variables si necesitas
-} */
+}
 
 async function handleEmailAuth() {
   if (isSigningUp.value) {
@@ -336,8 +336,14 @@ async function handleEmailAuth() {
           class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
           mypartner
         </h1>
+        <div v-if="user">
+          <span class="mr-4">¡Hola, cotilla anónimo! 👋</span>
+          <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
+            Logout
+          </button>
+        </div>
         <div class="flex gap-4">
-          <button @click="currentView = 'login'"
+          <button v-if="!user" @click="currentView = 'login'"
             class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
             Login
           </button>
@@ -388,7 +394,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-              }}, {{ profileSup.age }}</h3>
+                }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
