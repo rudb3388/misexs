@@ -643,7 +643,7 @@ async function handleEmailAuth() {
           <div class="grid grid-cols-1 text-center mt-10">
             <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
               <h3 class="text-xl font-semibold mb-2 text-pink-600">💌 Email</h3>
-              <p class="text-sm text-gray-600">info@myparnter.info</p>
+              <p class="text-sm text-gray-600">info@myparnter.club</p>
             </div>
           </div>
         </div>
