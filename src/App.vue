@@ -571,9 +571,9 @@ async function handleEmailAuth() {
           Volver a la lista
         </button>
         <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-4xl font-extrabold mb-4 text-pink-600">¿Qué es MisExs?</h2>
+          <h2 class="text-4xl font-extrabold mb-4 text-pink-600">¿Qué es MyPartner?</h2>
           <p class="text-lg mb-6 leading-relaxed">
-            MisExs es la primera plataforma donde puedes dejar <span class="font-semibold text-pink-500">reseñas
+            MyPartner es la primera plataforma donde puedes dejar <span class="font-semibold text-pink-500">reseñas
               anónimas</span> sobre tus exparejas.
             Con humor, respeto y sinceridad, ayudamos a crear un ecosistema más honesto en las relaciones. ❤️‍🔥
           </p>
