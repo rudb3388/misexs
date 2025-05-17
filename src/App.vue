@@ -64,7 +64,8 @@ const filteredProfiles = computed(() => {
 
   const query = searchQuery.value.toLowerCase()
   return profilesSup.value.filter(profileSup =>
-    profileSup.name.toLowerCase().includes(query)
+    profileSup.name.toLowerCase().includes(query) ||
+    profileSup.location?.toLowerCase().includes(query)
   )
 })
 
@@ -382,7 +383,7 @@ async function handleEmailAuth() {
 
           <div class="relative">
             <SearchIcon class="absolute left-3 top-3 text-gray-500" size="18" />
-            <input v-model="searchQuery" type="text" placeholder="Buscar perfil por nombre"
+            <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o ciudad"
               class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" />
 
           </div>
@@ -401,7 +402,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-                }}, {{ profileSup.age }}</h3>
+              }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
