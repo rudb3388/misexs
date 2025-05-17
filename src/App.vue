@@ -394,7 +394,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-                }}, {{ profileSup.age }}</h3>
+              }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
@@ -600,7 +600,16 @@ async function handleEmailAuth() {
               anónimas</span> sobre tus exparejas.
             Con humor, respeto y sinceridad, ayudamos a crear un ecosistema más honesto en las relaciones. ❤️‍🔥
           </p>
-
+          <p class="text-lg mb-6 leading-relaxed">
+            MyPartner es un MVP (Producto Mínimo Viable), es una plataforma en etapa de <span class="font-semibold text-pink-500">idea
+              materializada</span> que tiene un objetivo muy claro. MyPartner está basada en el dolor de muchas personas que han sido engañadas por personas sin responsabilidad afectiva.
+          </p>
+          <p class="text-lg mb-6 leading-relaxed">
+            Por eso, decidí crear esta web, para poder ayudar a toda persona que quiera saber el <span class="font-semibold text-pink-500">historial amoroso</span>
+            de una persona en concreto antes de conocerla. La mejor forma es dejar reseñas de las personas que conocemos, para que otras puedan ver si la persona que pretenden conocer es <span class="font-semibold text-pink-500">la persona ideal</span>
+            y es el perfil que están buscando o no.
+          </p>
+          <p class="text-lg mb-6 leading-relaxed">La web está en fase de prueba, pero con <span class="font-semibold text-pink-500">vuestro apoyo</span>, sé que podemos crear una web potente y que ayude a muchas personas.</p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mt-10">
             <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
               <h3 class="text-xl font-semibold mb-2 text-pink-600">💌 Anonimato garantizado</h3>
