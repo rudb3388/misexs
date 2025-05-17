@@ -36,6 +36,7 @@ async function getProfilesSup() {
   const { data, error } = await supabase.from('profiles').select('*, reviews(*)')
   profilesSup.value = data;
 
+  console.log(profilesSup.value)
   if (error) {
     console.error('Error al obtener perfiles:', error)
     return
@@ -215,9 +216,15 @@ async function addReview() {
       return
     }
 
-    // Recalcular la puntuación media
-    const totalRating = profileSup.reviews.reduce((sum, review) => sum + review.rating, 0)
-    profileSup.averageRating = totalRating / profileSup.reviews.length
+    const updatedReviews = [...profileSup.reviews, newReviewObj]
+    const totalRating = updatedReviews.reduce((sum, review) => sum + review.rating, 0)
+    const nuevoPromedio = totalRating / updatedReviews.length
+
+    await supabase
+      .from('profiles')
+      .update({ averageRating: nuevoPromedio })
+      .eq('id', selectedProfileId.value)
+
 
     // Resetear el formulario
     newReview.value = {
@@ -371,7 +378,7 @@ async function handleEmailAuth() {
       <!-- Home View - List of Profiles -->
       <div v-if="currentView === 'home'" class="space-y-6">
         <div class="flex justify-between items-center">
-          <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">Perfiles Populares</h2>
+          <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">Perfiles</h2>
 
           <div class="relative">
             <SearchIcon class="absolute left-3 top-3 text-gray-500" size="18" />
@@ -394,7 +401,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-              }}, {{ profileSup.age }}</h3>
+                }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
@@ -601,15 +608,22 @@ async function handleEmailAuth() {
             Con humor, respeto y sinceridad, ayudamos a crear un ecosistema más honesto en las relaciones. ❤️‍🔥
           </p>
           <p class="text-lg mb-6 leading-relaxed">
-            MyPartner es un MVP (Producto Mínimo Viable), es una plataforma en etapa de <span class="font-semibold text-pink-500">idea
-              materializada</span> que tiene un objetivo muy claro. MyPartner está basada en el dolor de muchas personas que han sido engañadas por personas sin responsabilidad afectiva.
+            MyPartner es un MVP (Producto Mínimo Viable), es una plataforma en etapa de <span
+              class="font-semibold text-pink-500">idea
+              materializada</span> que tiene un objetivo muy claro. MyPartner está basada en el dolor de muchas personas
+            que han sido engañadas por personas sin responsabilidad afectiva.
           </p>
           <p class="text-lg mb-6 leading-relaxed">
-            Por eso, decidí crear esta web, para poder ayudar a toda persona que quiera saber el <span class="font-semibold text-pink-500">historial amoroso</span>
-            de una persona en concreto antes de conocerla. La mejor forma es dejar reseñas de las personas que conocemos, para que otras puedan ver si la persona que pretenden conocer es <span class="font-semibold text-pink-500">la persona ideal</span>
+            Por eso, decidí crear esta web, para poder ayudar a toda persona que quiera saber el <span
+              class="font-semibold text-pink-500">historial amoroso</span>
+            de una persona en concreto antes de conocerla. La mejor forma es dejar reseñas de las personas que
+            conocemos, para que otras puedan ver si la persona que pretenden conocer es <span
+              class="font-semibold text-pink-500">la persona ideal</span>
             y es el perfil que están buscando o no.
           </p>
-          <p class="text-lg mb-6 leading-relaxed">La web está en fase de prueba, pero con <span class="font-semibold text-pink-500">vuestro apoyo</span>, sé que podemos crear una web potente y que ayude a muchas personas.</p>
+          <p class="text-lg mb-6 leading-relaxed">La web está en fase de prueba, pero con <span
+              class="font-semibold text-pink-500">vuestro apoyo</span>, sé que podemos crear una web potente y que ayude
+            a muchas personas.</p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mt-10">
             <div class="bg-white rounded-2xl shadow-lg p-6 border border-pink-100 hover:shadow-pink-200 transition">
               <h3 class="text-xl font-semibold mb-2 text-pink-600">💌 Anonimato garantizado</h3>
