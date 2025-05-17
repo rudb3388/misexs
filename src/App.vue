@@ -36,7 +36,6 @@ async function getProfilesSup() {
   const { data, error } = await supabase.from('profiles').select('*, reviews(*)')
   profilesSup.value = data;
 
-  console.log(profilesSup.value)
   if (error) {
     console.error('Error al obtener perfiles:', error)
     return
@@ -650,8 +649,7 @@ async function handleEmailAuth() {
         </div>
       </div>
 
-      <div v-else-if="currentView === 'contacto'"
-        class="min-h-screen bg-gradient-to-b from-pink-50 to-white text-gray-800 p-8">
+      <div v-else-if="currentView === 'contacto'" class="min-h-screen bg-white text-gray-800 p-8">
         <button @click="currentView = 'home'"
           class="flex items-center cursor-pointer text-amber-700 hover:text-amber-900">
           <ArrowLeftIcon class="mr-1" size="18" />
@@ -669,7 +667,59 @@ async function handleEmailAuth() {
               <h3 class="text-xl font-semibold mb-2 text-pink-600">💌 Email</h3>
               <p class="text-sm text-gray-600">info@myparnter.club</p>
             </div>
+
+            <form action="https://formsubmit.co/info@myparnter.club" method="POST"
+              class="mt-8 bg-white border border-pink-100 shadow-lg rounded-2xl p-8 space-y-6 text-left w-full mx-auto">
+              <div>
+                <label class="block mb-1 text-sm font-medium text-pink-600">Nombre</label>
+                <input type="text" name="nombre" required
+                  class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-300">
+              </div>
+
+              <div>
+                <label class="block mb-1 text-sm font-medium text-pink-600">Email</label>
+                <input type="email" name="email" required
+                  class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-300">
+              </div>
+
+              <div>
+                <label class="block mb-1 text-sm font-medium text-pink-600">Tipo de asunto</label>
+                <select name="tipo" required
+                  class="w-full border border-gray-300 rounded-xl p-3 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-300">
+                  <option disabled selected value="">Selecciona una opción</option>
+                  <option value="sugerencia">Sugerencia</option>
+                  <option value="queja">Queja</option>
+                  <option value="desarrollo">Desarrollo</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block mb-1 text-sm font-medium text-pink-600">Asunto</label>
+                <input type="text" name="asunto" required
+                  class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-300">
+              </div>
+
+              <div>
+                <label class="block mb-1 text-sm font-medium text-pink-600">Mensaje</label>
+                <textarea name="mensaje" rows="5" required
+                  class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-pink-300"></textarea>
+              </div>
+
+              <!-- Botón sexy -->
+              <div class="text-center">
+                <button type="submit"
+                  class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 ease-in-out hover:scale-105">
+                  🚀 Enviar mensaje
+                </button>
+              </div>
+
+              <!-- Anti spam de FormSubmit -->
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="box">
+            </form>
+
           </div>
+
         </div>
       </div>
     </main>
