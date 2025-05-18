@@ -380,10 +380,10 @@ async function handleEmailAuth() {
           </button>
         </div>
         <div class="flex gap-4">
-          <button v-if="!user" @click="currentView = 'login'"
+          <!-- <button v-if="!user" @click="currentView = 'login'"
             class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
             Login
-          </button>
+          </button> -->
           <button @click="currentView = 'createProfile'"
             class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
             Subir Perfil
@@ -414,13 +414,6 @@ async function handleEmailAuth() {
 
         <div class="flex justify-between items-center">
           <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">TOP Perfiles</h2>
-
-          <div class="relative">
-            <SearchIcon class="absolute left-3 top-3 text-gray-500" size="18" />
-            <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o ciudad"
-              class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" />
-
-          </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
