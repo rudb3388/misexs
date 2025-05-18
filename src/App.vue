@@ -13,8 +13,13 @@ import HeaderComponent from '../src/components/HeaderComponent.vue'
 import FooterComponent from '../src/components/FooterComponent.vue'
 import { supabase } from './services/supabase'
 const profilesSup = ref([])
+const perfilesOrdenados = computed(() => {
+  return [...filteredProfiles.value].sort((a, b) => b.averageRating - a.averageRating).slice(0, 3)
+})
+
 
 const currentView = ref('home')
+/* const darkMode = ref(false) */
 
 // Estado de la aplicación
 const searchQuery = ref('')
@@ -49,12 +54,18 @@ async function getProfilesSup() {
   }))
 }
 
-onMounted(() => {
+
+onMounted(async () => {
   getProfilesSup()
-  user.value = supabase.auth.getUser() // o supabase.auth.session().user
+  const { data: { user: currentUser } } = await supabase.auth.getUser()
+  user.value = currentUser
   supabase.auth.onAuthStateChange((_event, session) => {
     user.value = session?.user || null
   })
+
+  /*   // Detectar preferencia del usuario o estado guardado
+    const savedMode = localStorage.getItem('darkMode')
+    darkMode.value = savedMode === 'true' */
 })
 
 // Computed properties
@@ -367,6 +378,10 @@ async function handleEmailAuth() {
             Contacto
           </button>
         </div>
+        <!-- <button @click="toggleDarkMode">
+          {{ darkMode ? '🌞 Modo Claro' : '🌙 Modo Oscuro' }}
+        </button> -->
+
       </div>
     </nav>
 
@@ -377,6 +392,35 @@ async function handleEmailAuth() {
 
       <!-- Home View - List of Profiles -->
       <div v-if="currentView === 'home'" class="space-y-6">
+
+        <div class="flex justify-between items-center">
+          <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">TOP Perfiles</h2>
+
+          <div class="relative">
+            <SearchIcon class="absolute left-3 top-3 text-gray-500" size="18" />
+            <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o ciudad"
+              class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" />
+
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="(perfil, index) in perfilesOrdenados" :key="perfil.id" :class="[
+            'transition-transform duration-300 ease-in-out p-4 rounded-xl shadow-md cursor-pointer',
+            index === 0 ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-black scale-105 shadow-lg animate-pulse' : '',
+            index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-black scale-105 shadow-lg animate-pulse' : '',
+            index === 2 ? 'bg-gradient-to-br from-orange-200 to-orange-400 text-black scale-105 shadow-lg animate-pulse' : '',
+            index > 2 ? 'bg-white dark:bg-gray-800' : ''
+          ]" @click="viewProfile(perfil.id)">
+            <img :src="perfil.pic" alt="Foto de perfil" class="w-full h-48 object-cover rounded-md mb-2" />
+            <h3 class="text-xl font-semibold">{{ perfil.name }}</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300">{{ perfil.location }}</p>
+            <p class="text-sm mt-1">Edad: {{ perfil.age }}</p>
+            <p class="text-sm">Puntuación media: ⭐ {{ perfil.averageRating.toFixed(2) }}</p>
+            <p class="text-sm">Vistas: 👁️ {{ perfil.views }}</p>
+        </div>
+        </div>
+
         <div class="flex justify-between items-center">
           <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">Perfiles</h2>
 
@@ -401,7 +445,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-              }}, {{ profileSup.age }}</h3>
+                }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
