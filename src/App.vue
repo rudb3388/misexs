@@ -7,7 +7,12 @@ import {
   Search as SearchIcon,
   ArrowLeft as ArrowLeftIcon,
   ThumbsUp as ThumbsUpIcon,
-  ThumbsDown as ThumbsDownIcon
+  ThumbsDown as ThumbsDownIcon,
+  DollarSign,
+  Star,
+  Rocket,
+  TrendingUp,
+  Flame
 } from 'lucide-vue-next'
 import HeaderComponent from '../src/components/HeaderComponent.vue'
 import FooterComponent from '../src/components/FooterComponent.vue'
@@ -36,6 +41,51 @@ const password = ref('')
 const isSigningUp = ref(false)
 
 const selectedImageFile = ref(null)
+
+const roadmap = ref([
+  {
+    title: 'Usuarios ganan dinero por aportar valor',
+    description: 'Sistema de recompensas por reseñas útiles, divertidas o muy votadas.',
+    icon: DollarSign,
+    date: 'Junio 2025',
+    status: 'progreso'
+  },
+  {
+    title: 'Perfiles destacados y reseñas premium',
+    description: 'Los usuarios podrán pagar para destacar su reseña o su perfil (¡si se atreven!).',
+    icon: Star,
+    date: 'Julio 2025',
+    status: 'futuro'
+  },
+  {
+    title: 'Sistema de votos y rankings de exs',
+    description: '¿Top 10 de exs inolvidables? Viene el ranking con más salseo que Eurovisión.',
+    icon: TrendingUp,
+    date: 'Agosto 2025',
+    status: 'futuro'
+  },
+  {
+    title: 'Comunidades temáticas (zodiaco, tóxicos, intensitos...)',
+    description: 'Agrupamos reseñas por estilos relacionales para que encuentres tu "tribu de exs".',
+    icon: UsersIcon,
+    date: 'Septiembre 2025',
+    status: 'futuro'
+  },
+  {
+    title: 'Reseñas de audio (¡sí, vas a poder contarla con tu voz!)',
+    description: 'Exprésate como quieras. Voz, drama y arte para la posteridad.',
+    icon: Flame,
+    date: 'Noviembre 2025',
+    status: 'futuro'
+  },
+  {
+    title: 'Internacionalización y multilenguaje',
+    description: '¡Que el drama no tenga fronteras! Traducimos MyPartner al inglés, francés, etc.',
+    icon: Rocket,
+    date: 'Diciembre 2025',
+    status: 'futuro'
+  }
+])
 
 async function getProfilesSup() {
   const { data, error } = await supabase.from('profiles').select('*, reviews(*)')
@@ -458,7 +508,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-              }}, {{ profileSup.age }}</h3>
+                }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
@@ -703,6 +753,39 @@ async function handleEmailAuth() {
                 responsabilidad!</p>
             </div>
           </div>
+          <!-- Timeline Roadmap -->
+          <div class="max-w-3xl mx-auto mt-16">
+            <h2 class="text-3xl font-bold text-center text-pink-600 mb-6">🔮 Roadmap de MyPartner</h2>
+            <p class="text-center text-gray-600 mb-12">Estas son las mejoras que vienen para revolucionar las
+              relaciones... y el salseo 🧂</p>
+
+            <ol class="relative border-l border-pink-300">
+              <li v-for="(item, index) in roadmap" :key="index" class="mb-10 ml-6">
+                <span
+                  class="absolute flex items-center justify-center w-6 h-6 bg-pink-100 rounded-full -left-3 ring-8 ring-white">
+                  <component :is="item.icon" class="w-3 h-3 text-pink-600" />
+                </span>
+                <h3 class="flex items-center mb-1 text-lg font-semibold text-pink-700">
+                  {{ item.title }}
+                  <span v-if="item.status === 'progreso'"
+                    class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 ml-3 px-2.5 py-0.5 rounded">
+                    En progreso
+                  </span>
+                  <span v-if="item.status === 'hecho'"
+                    class="bg-green-100 text-green-800 text-xs font-medium mr-2 ml-3 px-2.5 py-0.5 rounded">
+                    Hecho
+                  </span>
+                  <span v-if="item.status === 'futuro'"
+                    class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 ml-3 px-2.5 py-0.5 rounded">
+                    Próximamente
+                  </span>
+                </h3>
+                <p class="mb-2 text-base font-normal text-gray-600">{{ item.description }}</p>
+                <time class="block mb-2 text-sm font-normal leading-none text-gray-400">📅 {{ item.date }}</time>
+              </li>
+            </ol>
+          </div>
+
         </div>
       </div>
 
