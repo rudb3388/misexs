@@ -749,7 +749,7 @@ async function handleEmailAuth() {
           <h2 class="text-4xl font-extrabold mb-4 text-pink-600">¿Qué es MyPartner?</h2>
           <p class="text-lg mb-6 leading-relaxed">
             MyPartner es la primera plataforma donde puedes dejar <span class="font-semibold text-pink-500">reseñas
-              anónimas</span> sobre tus exparejas.
+              anónimas</span> sobre personas, puede ser tu expareja, un@ amig@ o cualquier persona que hayas conocido..
             Con humor, respeto y sinceridad, ayudamos a crear un ecosistema más honesto en las relaciones. ❤️‍🔥
           </p>
           <p class="text-lg mb-6 leading-relaxed">
