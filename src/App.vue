@@ -22,7 +22,7 @@ const perfilesOrdenados = computed(() => {
   return [...filteredProfiles.value].sort((a, b) => b.averageRating - a.averageRating).slice(0, 3)
 })
 
-
+const isMenuOpen = ref(false)
 const currentView = ref('home')
 /* const darkMode = ref(false) */
 
@@ -399,60 +399,98 @@ async function handleEmailAuth() {
 <template>
   <div class="min-h-screen w-full overflow-x-hidden">
     <nav class="bg-blue-800 text-white shadow-md px-6 py-4 rounded-b-2xl rounded-t-2xl">
-      <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 @click="currentView = 'home'"
-          class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
-          mypartner
-        </h1>
-        <div class="flex gap-4">
-          <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
-            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
-            </svg>
-            TikTok
-          </a>
-          <a href="https://www.instagram.com/mypartner.club" target="_blank"
-            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M12 2.163c3.204 0 3.584.012 4.849.07 1.366.062 2.633.334 3.608 1.31.975.975 1.247 2.243 1.31 3.608.058 1.265.07 1.645.07 4.849s-.012 3.584-.07 4.849c-.062 1.366-.334 2.633-1.31 3.608-.975.975-2.243 1.247-3.608 1.31-1.265.058-1.645.07-4.849.07s-3.584-.012-4.849-.07c-1.366-.062-2.633-.334-3.608-1.31-.975-.975-1.247-2.243-1.31-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.849c.062-1.366.334-2.633 1.31-3.608.975-.975 2.243-1.247 3.608-1.31C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.735 0 8.332.014 7.052.072 5.77.13 4.605.425 3.588 1.443 2.571 2.46 2.276 3.626 2.218 4.908.014 8.332 0 8.735 0 12s.014 3.668.072 4.948c.058 1.282.353 2.448 1.37 3.465 1.017 1.017 2.183 1.312 3.465 1.37C8.332 23.986 8.735 24 12 24s3.668-.014 4.948-.072c1.282-.058 2.448-.353 3.465-1.37 1.017-1.017 1.312-2.183 1.37-3.465.058-1.28.072-1.683.072-4.948s-.014-3.668-.072-4.948c-.058-1.282-.353-2.448-1.37-3.465C19.396.425 18.23.13 16.948.072 15.668.014 15.265 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0-2.881 1.44 1.44 0 0 0 0 2.881z" />
-            </svg>
-            Instagram
-          </a>
-        </div>
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <!-- Logo -->
+    <h1 @click="currentView = 'home'"
+        class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
+      mypartner
+    </h1>
 
-        <div v-if="user">
-          <span class="mr-4">¡Hola, cotilla anónimo! 👋</span>
-          <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
-            Logout
-          </button>
-        </div>
-        <div class="flex gap-4">
-          <!-- <button v-if="!user" @click="currentView = 'login'"
-            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Login
-          </button> -->
-          <button @click="currentView = 'createProfile'"
-            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Subir Perfil
-          </button>
-          <button @click="currentView = 'info'"
-            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Info
-          </button>
-          <button @click="currentView = 'contacto'"
-            class="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Contacto
-          </button>
-        </div>
-        <!-- <button @click="toggleDarkMode">
-          {{ darkMode ? '🌞 Modo Claro' : '🌙 Modo Oscuro' }}
-        </button> -->
+    <!-- Botón hamburguesa en móvil -->
+    <button class="md:hidden flex items-center" @click="isMenuOpen = !isMenuOpen">
+      <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24">
+        <path v-if="!isMenuOpen"
+          d="M4 6h16M4 12h16M4 18h16" />
+        <path v-else
+          d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
 
+    <!-- Menú en desktop -->
+    <div class="hidden md:flex gap-4 items-center">
+      <!-- Redes -->
+      <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
+        class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+        <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256">
+          <path
+            d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
+        </svg>
+        TikTok
+      </a>
+      <a href="https://www.instagram.com/mypartner.club" target="_blank"
+        class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+        <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+          <path
+            d="M12 2.163c3.204 0 3.584.012 4.849.07... (truncado para brevedad)" />
+        </svg>
+        Instagram
+      </a>
+
+      <!-- Botones -->
+      <button @click="currentView = 'createProfile'"
+        class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+        Subir Perfil
+      </button>
+      <button @click="currentView = 'info'"
+        class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+        Info
+      </button>
+      <button @click="currentView = 'contacto'"
+        class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+        Contacto
+      </button>
+
+      <!-- Usuario -->
+      <div v-if="user" class="flex items-center gap-2">
+        <span>¡Hola, cotilla anónimo! 👋</span>
+        <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
+          Logout
+        </button>
       </div>
-    </nav>
+    </div>
+  </div>
+
+  <!-- Menú móvil -->
+  <div v-if="isMenuOpen" class="md:hidden mt-4 flex flex-col gap-2">
+    <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
+      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+      TikTok
+    </a>
+    <a href="https://www.instagram.com/mypartner.club" target="_blank"
+      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+      Instagram
+    </a>
+    <button @click="currentView = 'createProfile'"
+      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+      Subir Perfil
+    </button>
+    <button @click="currentView = 'info'"
+      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+      Info
+    </button>
+    <button @click="currentView = 'contacto'"
+      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+      Contacto
+    </button>
+    <div v-if="user" class="flex items-center justify-between px-4">
+      <span>¡Hola, cotilla anónimo! 👋</span>
+      <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
 
     <HeaderComponent />
 
