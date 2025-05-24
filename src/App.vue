@@ -399,97 +399,95 @@ async function handleEmailAuth() {
 <template>
   <div class="min-h-screen w-full overflow-x-hidden">
     <nav class="bg-blue-800 text-white shadow-md px-6 py-4 rounded-b-2xl rounded-t-2xl">
-  <div class="max-w-7xl mx-auto flex justify-between items-center">
-    <!-- Logo -->
-    <h1 @click="currentView = 'home'"
-        class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
-      mypartner
-    </h1>
+      <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <!-- Logo -->
+        <h1 @click="currentView = 'home'"
+          class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
+          mypartner
+        </h1>
 
-    <!-- Botón hamburguesa en móvil -->
-    <button class="md:hidden flex items-center" @click="isMenuOpen = !isMenuOpen">
-      <svg class="w-6 h-6 fill-white" viewBox="0 0 24 24">
-        <path v-if="!isMenuOpen"
-          d="M4 6h16M4 12h16M4 18h16" />
-        <path v-else
-          d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
+        <!-- Botón hamburguesa en móvil -->
+        <!-- Botón hamburguesa -->
+        <button class="md:hidden flex items-center z-50 relative" @click="isMenuOpen = !isMenuOpen">
+         <svg class="w-6 h-6 stroke-white" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
 
-    <!-- Menú en desktop -->
-    <div class="hidden md:flex gap-4 items-center">
-      <!-- Redes -->
-      <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
-        class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-        <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256">
-          <path
-            d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
-        </svg>
-        TikTok
-      </a>
-      <a href="https://www.instagram.com/mypartner.club" target="_blank"
-        class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-        <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
-          <path
-            d="M12 2.163c3.204 0 3.584.012 4.849.07... (truncado para brevedad)" />
-        </svg>
-        Instagram
-      </a>
+            <path :d="isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
+          </svg>
 
-      <!-- Botones -->
-      <button @click="currentView = 'createProfile'"
-        class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-        Subir Perfil
-      </button>
-      <button @click="currentView = 'info'"
-        class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-        Info
-      </button>
-      <button @click="currentView = 'contacto'"
-        class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-        Contacto
-      </button>
-
-      <!-- Usuario -->
-      <div v-if="user" class="flex items-center gap-2">
-        <span>¡Hola, cotilla anónimo! 👋</span>
-        <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
-          Logout
         </button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Menú móvil -->
-  <div v-if="isMenuOpen" class="md:hidden mt-4 flex flex-col gap-2">
-    <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
-      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-      TikTok
-    </a>
-    <a href="https://www.instagram.com/mypartner.club" target="_blank"
-      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-      Instagram
-    </a>
-    <button @click="currentView = 'createProfile'"
-      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-      Subir Perfil
-    </button>
-    <button @click="currentView = 'info'"
-      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-      Info
-    </button>
-    <button @click="currentView = 'contacto'"
-      class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-      Contacto
-    </button>
-    <div v-if="user" class="flex items-center justify-between px-4">
-      <span>¡Hola, cotilla anónimo! 👋</span>
-      <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
-        Logout
-      </button>
-    </div>
-  </div>
-</nav>
+
+        <!-- Menú en desktop -->
+        <div class="hidden md:flex gap-4 items-center">
+          <!-- Redes -->
+          <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256">
+              <path
+                d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
+            </svg>
+            TikTok
+          </a>
+          <a href="https://www.instagram.com/mypartner.club" target="_blank"
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.849.07... (truncado para brevedad)" />
+            </svg>
+            Instagram
+          </a>
+
+          <!-- Botones -->
+          <button @click="currentView = 'createProfile'"
+            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Subir Perfil
+          </button>
+          <button @click="currentView = 'info'"
+            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Info
+          </button>
+          <button @click="currentView = 'contacto'"
+            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Contacto
+          </button>
+
+          <!-- Usuario -->
+          <div v-if="user" class="flex items-center gap-2">
+            <span>¡Hola, cotilla anónimo! 👋</span>
+            <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menú móvil -->
+      <div v-if="isMenuOpen" class="md:hidden mt-4 flex flex-col gap-2">
+        <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
+          class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+          TikTok
+        </a>
+        <a href="https://www.instagram.com/mypartner.club" target="_blank"
+          class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+          Instagram
+        </a>
+        <button @click="currentView = 'createProfile'"
+          class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+          Subir Perfil
+        </button>
+        <button @click="currentView = 'info'" class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+          Info
+        </button>
+        <button @click="currentView = 'contacto'" class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
+          Contacto
+        </button>
+        <div v-if="user" class="flex items-center justify-between px-4">
+          <span>¡Hola, cotilla anónimo! 👋</span>
+          <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
 
 
     <HeaderComponent />
