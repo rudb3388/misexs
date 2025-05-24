@@ -512,7 +512,7 @@ async function handleEmailAuth() {
             index === 2 ? 'bg-gradient-to-br from-orange-200 to-orange-400 text-black scale-105 shadow-lg animate-pulse' : '',
             index > 2 ? 'bg-white dark:bg-gray-800' : ''
           ]" @click="viewProfile(perfil.id)">
-            <img :src="perfil.pic" alt="Foto de perfil" class="w-full h-auto object-contain rounded-md mb-2" />
+            <img :src="perfil.pic" alt="Foto de perfil" class="w-full h-64 object-contain rounded-md mb-2" />
             <h3 class="text-xl font-semibold">{{ perfil.name }}</h3>
             <p class="text-sm text-gray-600 dark:text-gray-300">{{ perfil.location }}</p>
             <p class="text-sm mt-1">Edad: {{ perfil.age }}</p>
@@ -536,10 +536,10 @@ async function handleEmailAuth() {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="profileSup in filteredProfiles" :key="profileSup.id" @click="viewProfile(profileSup.id)"
             class="bg-white rounded-xl shadow hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden group cursor-pointer">
-            <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 relative">
+            <div class="h-auto bg-gradient-to-br from-blue-100 to-blue-200 relative">
 
               <img v-if="profileSup.pic" :src="profileSup.pic" alt="Foto de perfil"
-                class="object-contain w-full h-auto" />
+                class="object-contain w-full h-64" />
               <div v-else class="absolute inset-0 flex items-center justify-center text-amber-800">
                 <UsersIcon size="64" />
               </div>
