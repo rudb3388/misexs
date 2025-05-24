@@ -421,19 +421,20 @@ async function handleEmailAuth() {
         <div class="hidden md:flex gap-4 items-center">
           <!-- Redes -->
           <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
-            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg leading-none">
             <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256">
               <path
                 d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
             </svg>
-            TikTok
+            <span class="text-white leading-none">TikTok</span>
           </a>
+
           <a href="https://www.instagram.com/mypartner.club" target="_blank"
-            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg leading-none">
             <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.849.07... (truncado para brevedad)" />
+              <path d="M12 2.163c3.204 0 3.584.012 4.849.07..." />
             </svg>
-            Instagram
+            <span class="text-white leading-none">Instagram</span>
           </a>
 
           <!-- Botones -->
@@ -546,7 +547,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-                }}, {{ profileSup.age }}</h3>
+              }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">

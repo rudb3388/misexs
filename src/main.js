@@ -5,6 +5,12 @@ import App from './App.vue'
 import router from './router'
 import { createHead } from '@vueuse/head'
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+  })
+}
+
 const app = createApp(App)
 const head = createHead()
 
