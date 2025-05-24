@@ -520,16 +520,18 @@ async function handleEmailAuth() {
 
         </div>
 
-        <div class="flex justify-between items-center">
-          <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">Perfiles</h2>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 w-full">
+          <h2 class="text-4xl font-extrabold tracking-tight text-amber-800">
+            Perfiles
+          </h2>
 
-          <div class="relative">
+          <div class="relative w-full sm:w-auto">
             <SearchIcon class="absolute left-3 top-3 text-gray-500" size="18" />
             <input v-model="searchQuery" type="text" placeholder="Buscar por nombre o ciudad"
-              class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" />
-
+              class="w-full sm:w-[300px] pl-10 pr-4 py-2 rounded-lg border border-gray-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition" />
           </div>
         </div>
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="profileSup in filteredProfiles" :key="profileSup.id" @click="viewProfile(profileSup.id)"
@@ -544,7 +546,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-              }}, {{ profileSup.age }}</h3>
+                }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
