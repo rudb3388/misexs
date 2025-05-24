@@ -409,7 +409,7 @@ async function handleEmailAuth() {
         <!-- Botón hamburguesa en móvil -->
         <!-- Botón hamburguesa -->
         <button class="md:hidden flex items-center z-50 relative" @click="isMenuOpen = !isMenuOpen">
-         <svg class="w-6 h-6 stroke-white" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <svg class="w-6 h-6 stroke-white" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
 
             <path :d="isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
           </svg>
@@ -544,7 +544,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-                }}, {{ profileSup.age }}</h3>
+              }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
