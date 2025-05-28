@@ -416,13 +416,6 @@ async function signIn(email, password) {
   return data
 }
 
-async function logout() {
-  const { error } = await supabase.auth.signOut()
-  if (error) console.error('Error al cerrar sesión:', error.message)
-  else alert('Sesión cerrada')
-  // Aquí limpia variables si necesitas
-}
-
 async function handleEmailAuth() {
   if (isSigningUp.value) {
     await signUp(email.value, password.value)
@@ -438,60 +431,73 @@ async function handleEmailAuth() {
 
 <template>
   <div class="min-h-screen w-full overflow-x-hidden">
-    <aside
-      class="h-screen w-20 md:w-64 bg-blue-800 text-white flex flex-col justify-between py-6 px-4 fixed top-0 left-0 shadow-2xl">
-      <!-- Logo -->
-      <div>
-        <h1 class="text-2xl font-extrabold tracking-wide mb-10 hidden md:block cursor-pointer"
-          @click="currentView = 'home'">
+    <!-- Menú móvil mejorado -->
+    <nav
+      class="bg-blue-800 text-white shadow-md py-4 rounded-b-2xl rounded-t-2xl w-full fixed top-0 left-0 right-0 z-50">
+      <div class="w-full flex justify-between items-center px-4">
+        <!-- Logo -->
+        <h1 @click="currentView = 'home'"
+          class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
           mypartner
         </h1>
-        <!-- Íconos menú -->
-        <nav class="flex flex-col gap-6">
-          <button @click="currentView = 'home'"
-            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
-            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M3 12l2-2m0 0l7-7 7 7m-9 13V9m0 0h4m4 4h4v6a2 2 0 01-2 2h-6v-8z" />
-            </svg>
-            <span class="hidden md:inline">Inicio</span>
-          </button>
 
-          <button @click="currentView = 'explore'"
-            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
-            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M21 21l-4.35-4.35m1.32-5.16a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span class="hidden md:inline">Explorar</span>
-          </button>
-
-          <button @click="currentView = 'createProfile'"
-            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
-            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path d="M12 4v16m8-8H4" />
-            </svg>
-            <span class="hidden md:inline">Subir Perfil</span>
-          </button>
-
-          <button @click="currentView = 'contacto'"
-            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
-            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <!-- Menú en desktop -->
+        <div class="hidden md:flex gap-4 items-center">
+          <!-- Redes -->
+          <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg leading-none">
+            <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256">
               <path
-                d="M16 12h2a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4 4H8m0 0H6a2 2 0 00-2 2v4a2 2 0 002 2h2m4-4h4m0 0v4a2 2 0 002 2h2m-6-6v4" />
+                d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
             </svg>
-            <span class="hidden md:inline">Contacto</span>
+            <span class="text-white leading-none">TikTok</span>
+          </a>
+
+          <a href="https://www.instagram.com/mypartner.club" target="_blank"
+            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg leading-none">
+            <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.849.07..." />
+            </svg>
+            <span class="text-white leading-none">Instagram</span>
+          </a>
+
+          <!-- Botones -->
+          <button @click="currentView = 'createProfile'"
+            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Subir Perfil
           </button>
-        </nav>
+          <button @click="currentView = 'info'"
+            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Info
+          </button>
+          <button @click="currentView = 'contacto'"
+            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
+            Contacto
+          </button>
+        </div>
       </div>
 
-      <!-- Usuario -->
-      <div v-if="user" class="flex flex-col gap-2">
-        <div class="hidden md:block mb-2 text-sm">¡Hola, cotilla anónimo! 👀</div>
-        <button @click="logout" class="bg-red-600 hover:bg-red-700 py-2 px-3 rounded-xl text-sm">
-          Logout
+      <!-- Menú móvil -->
+      <div
+        class="fixed bottom-0 left-0 right-0 bg-blue-800 text-white shadow-md px-4 py-2 md:hidden flex justify-around items-center z-50 rounded-t-2xl">
+        <button @click="currentView = 'home'" class="flex flex-col items-center text-xs">
+          <span class="text-2xl">🏠</span>
+          <span>Inicio</span>
+        </button>
+        <button @click="currentView = 'createProfile'" class="flex flex-col items-center text-xs">
+          <span class="text-2xl">➕</span>
+          <span>Subir</span>
+        </button>
+        <button @click="currentView = 'info'" class="flex flex-col items-center text-xs">
+          <span class="text-2xl">ℹ️</span>
+          <span>Info</span>
+        </button>
+        <button @click="currentView = 'contacto'" class="flex flex-col items-center text-xs">
+          <span class="text-2xl">📞</span>
+          <span>Contacto</span>
         </button>
       </div>
-    </aside>
-
+    </nav>
 
 
     <HeaderComponent />
@@ -550,7 +556,7 @@ async function handleEmailAuth() {
             </div>
             <div class="p-4">
               <h3 class="text-xl font-semibold text-gray-900 group-hover:text-amber-700 transition">{{ profileSup.name
-              }}, {{ profileSup.age }}</h3>
+                }}, {{ profileSup.age }}</h3>
               <h4 class="text-sm mt-2 text-gray-500">{{ profileSup.location }}</h4>
 
               <div class="flex items-center mt-2">
