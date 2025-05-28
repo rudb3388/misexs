@@ -433,7 +433,7 @@ async function handleEmailAuth() {
   <div class="min-h-screen w-full overflow-x-hidden">
     <!-- Menú móvil mejorado -->
     <nav
-      class="bg-blue-800 text-white shadow-md py-4 rounded-b-2xl rounded-t-2xl w-full fixed top-0 left-0 right-0 z-50">
+      class="bg-blue-800 text-white shadow-md py-4  w-full fixed top-0 left-0 right-0 z-50">
       <div class="w-full flex justify-between items-center px-4">
         <!-- Logo -->
         <h1 @click="currentView = 'home'"
@@ -479,7 +479,7 @@ async function handleEmailAuth() {
 
       <!-- Menú móvil -->
       <div
-        class="fixed bottom-0 left-0 right-0 bg-blue-800 text-white shadow-md px-4 py-2 md:hidden flex justify-around items-center z-50 rounded-t-2xl">
+        class="fixed bottom-0 left-0 right-0 bg-blue-800 text-white shadow-md px-4 py-2 md:hidden flex justify-around items-center z-50">
         <button @click="currentView = 'home'" class="flex flex-col items-center text-xs">
           <span class="text-2xl">🏠</span>
           <span>Inicio</span>
