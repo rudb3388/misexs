@@ -22,7 +22,7 @@ const perfilesOrdenados = computed(() => {
   return [...filteredProfiles.value].sort((a, b) => b.averageRating - a.averageRating).slice(0, 3)
 })
 
-const isMenuOpen = ref(false)
+/* const isMenuOpen = ref(false) */
 const currentView = ref('home')
 /* const darkMode = ref(false) */
 
@@ -87,6 +87,45 @@ const roadmap = ref([
   }
 ])
 
+const filters = ref({
+  ageMin: 18,
+  ageMax: 99,
+  minReviews: 0,
+  category: '',
+  relationshipType: ''
+})
+
+const exploredFilteredProfiles = computed(() => {
+  return profilesSup.value.filter(profile => {
+    const query = searchQuery.value.toLowerCase()
+    const matchesSearch = !searchQuery.value ||
+      profile.name.toLowerCase().includes(query) ||
+      profile.location?.toLowerCase().includes(query)
+
+    const ageOk = profile.age >= filters.value.ageMin && profile.age <= filters.value.ageMax
+    const reviewsOk = (profile.reviews?.length || 0) >= filters.value.minReviews
+    const categoryOk = !filters.value.category || profile.categories?.includes(filters.value.category)
+    const relationOk = !filters.value.relationshipType || profile.relationshipType === filters.value.relationshipType
+
+    return matchesSearch && ageOk && reviewsOk && categoryOk && relationOk
+  })
+})
+
+const showSurpriseModal = ref(false)
+const surpriseProfile = ref(null)
+
+function getRandomProfile() {
+  const profiles = exploredFilteredProfiles.value
+  if (profiles.length === 0) {
+    // Puedes usar un modal también aquí si quieres
+    alert("No hay perfiles que coincidan con los filtros.")
+    return
+  }
+  const random = profiles[Math.floor(Math.random() * profiles.length)]
+  surpriseProfile.value = random
+  showSurpriseModal.value = true
+}
+
 async function getProfilesSup() {
   const { data, error } = await supabase.from('profiles').select('*, reviews(*)')
   profilesSup.value = data;
@@ -142,7 +181,7 @@ const newProfile = ref({
 
 // Método para enviar el perfil al backend
 async function submitProfile() {
-  if (!newProfile.value.name || !newProfile.value.age || !newProfile.value.location || !selectedImageFile.value) {
+  if (!newProfile.value.name || !newProfile.value.age || !newProfile.value.location || !selectedImageFile.value || !newProfile.value.relationshipType) {
     alert('Por favor, completa todos los campos')
     return
   }
@@ -159,6 +198,7 @@ async function submitProfile() {
         name: newProfile.value.name,
         age: newProfile.value.age,
         location: newProfile.value.location,
+        relationshipType: newProfile.value.relationshipType,
         averageRating: 0, // Esto lo puedes definir como 0 o calcularlo después,
         pic: publicURL,
       }
@@ -169,7 +209,7 @@ async function submitProfile() {
     alert('Hubo un error al subir el perfil')
   } else {
     alert('Perfil subido con éxito!')
-    newProfile.value = { name: '', age: '', location: '' } // Resetear formulario
+    newProfile.value = { name: '', age: '', location: '', relationshipType: '' } // Resetear formulario
     currentView.value = 'home' // Volver a la vista principal
     selectedImageFile.value = null
     getProfilesSup() // Actualizar la lista de perfiles
@@ -398,97 +438,60 @@ async function handleEmailAuth() {
 
 <template>
   <div class="min-h-screen w-full overflow-x-hidden">
-    <nav class="bg-blue-800 text-white shadow-md px-6 py-4 rounded-b-2xl rounded-t-2xl">
-      <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <!-- Logo -->
-        <h1 @click="currentView = 'home'"
-          class="text-3xl font-extrabold tracking-wide cursor-pointer transition-transform hover:scale-105">
+    <aside
+      class="h-screen w-20 md:w-64 bg-blue-800 text-white flex flex-col justify-between py-6 px-4 fixed top-0 left-0 shadow-2xl">
+      <!-- Logo -->
+      <div>
+        <h1 class="text-2xl font-extrabold tracking-wide mb-10 hidden md:block cursor-pointer"
+          @click="currentView = 'home'">
           mypartner
         </h1>
-
-        <!-- Botón hamburguesa en móvil -->
-        <!-- Botón hamburguesa -->
-        <button class="md:hidden flex items-center z-50 relative" @click="isMenuOpen = !isMenuOpen">
-          <svg class="w-6 h-6 stroke-white" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
-
-            <path :d="isMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'" />
-          </svg>
-
-        </button>
-
-
-        <!-- Menú en desktop -->
-        <div class="hidden md:flex gap-4 items-center">
-          <!-- Redes -->
-          <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
-            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg leading-none">
-            <svg class="w-5 h-5 fill-white" viewBox="0 0 256 256">
-              <path
-                d="M224,72a72,72,0,0,1-72-72h32a40,40,0,0,0,40,40v32Zm-88-48v132a28,28,0,1,1-28-28,8,8,0,0,0,0-16,44,44,0,1,0,44,44V72a103.6,103.6,0,0,0,40,8V48A72.1,72.1,0,0,1,136,24Z" />
+        <!-- Íconos menú -->
+        <nav class="flex flex-col gap-6">
+          <button @click="currentView = 'home'"
+            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
+            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M3 12l2-2m0 0l7-7 7 7m-9 13V9m0 0h4m4 4h4v6a2 2 0 01-2 2h-6v-8z" />
             </svg>
-            <span class="text-white leading-none">TikTok</span>
-          </a>
+            <span class="hidden md:inline">Inicio</span>
+          </button>
 
-          <a href="https://www.instagram.com/mypartner.club" target="_blank"
-            class="flex items-center gap-2 bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg leading-none">
-            <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.849.07..." />
+          <button @click="currentView = 'explore'"
+            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
+            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M21 21l-4.35-4.35m1.32-5.16a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <span class="text-white leading-none">Instagram</span>
-          </a>
+            <span class="hidden md:inline">Explorar</span>
+          </button>
 
-          <!-- Botones -->
           <button @click="currentView = 'createProfile'"
-            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Subir Perfil
+            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
+            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M12 4v16m8-8H4" />
+            </svg>
+            <span class="hidden md:inline">Subir Perfil</span>
           </button>
-          <button @click="currentView = 'info'"
-            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Info
-          </button>
+
           <button @click="currentView = 'contacto'"
-            class="bg-white/10 hover:bg-white/20 font-semibold py-2 px-4 rounded-xl transition duration-200 shadow-md hover:shadow-lg">
-            Contacto
+            class="flex items-center gap-4 hover:bg-white/10 rounded-xl px-3 py-2 transition">
+            <svg class="w-6 h-6 mx-auto md:mx-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path
+                d="M16 12h2a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4 4H8m0 0H6a2 2 0 00-2 2v4a2 2 0 002 2h2m4-4h4m0 0v4a2 2 0 002 2h2m-6-6v4" />
+            </svg>
+            <span class="hidden md:inline">Contacto</span>
           </button>
-
-          <!-- Usuario -->
-          <div v-if="user" class="flex items-center gap-2">
-            <span>¡Hola, cotilla anónimo! 👋</span>
-            <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
-              Logout
-            </button>
-          </div>
-        </div>
+        </nav>
       </div>
 
-      <!-- Menú móvil -->
-      <div v-if="isMenuOpen" class="md:hidden mt-4 flex flex-col gap-2">
-        <a href="https://www.tiktok.com/@mypartner.club" target="_blank"
-          class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-          TikTok
-        </a>
-        <a href="https://www.instagram.com/mypartner.club" target="_blank"
-          class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-          Instagram
-        </a>
-        <button @click="currentView = 'createProfile'"
-          class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-          Subir Perfil
+      <!-- Usuario -->
+      <div v-if="user" class="flex flex-col gap-2">
+        <div class="hidden md:block mb-2 text-sm">¡Hola, cotilla anónimo! 👀</div>
+        <button @click="logout" class="bg-red-600 hover:bg-red-700 py-2 px-3 rounded-xl text-sm">
+          Logout
         </button>
-        <button @click="currentView = 'info'" class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-          Info
-        </button>
-        <button @click="currentView = 'contacto'" class="bg-white/10 hover:bg-white/20 py-2 px-4 rounded-xl shadow-md">
-          Contacto
-        </button>
-        <div v-if="user" class="flex items-center justify-between px-4">
-          <span>¡Hola, cotilla anónimo! 👋</span>
-          <button @click="logout" class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">
-            Logout
-          </button>
-        </div>
       </div>
-    </nav>
+    </aside>
+
 
 
     <HeaderComponent />
@@ -567,6 +570,95 @@ async function handleEmailAuth() {
           </div>
         </div>
       </div>
+      <div v-if="currentView === 'explore'" class="p-6 space-y-6">
+        <h2 class="text-2xl font-bold text-black">🔍 Explorar Perfiles</h2>
+
+        <!-- FILTROS -->
+        <div class="bg-white/10 p-4 rounded-xl shadow-md grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <label class="block mb-1 text-sm font-medium text-black">Edad mínima</label>
+            <input v-model="filters.ageMin" type="number" min="18"
+              class="w-full rounded px-3 py-1 bg-white/20 text-black">
+          </div>
+          <div>
+            <label class="block mb-1 text-sm font-medium text-black">Edad máxima</label>
+            <input v-model="filters.ageMax" type="number" max="99"
+              class="w-full rounded px-3 py-1 bg-white/20 text-black">
+          </div>
+          <div>
+            <label class="block mb-1 text-sm font-medium text-black">Mínimo de reseñas</label>
+            <input v-model="filters.minReviews" type="number" min="0"
+              class="w-full rounded px-3 py-1 bg-white/20 text-black">
+          </div>
+          <div>
+            <label class="block mb-1 text-sm font-medium text-black">Categorías</label>
+            <select v-model="filters.category" class="w-full rounded px-3 py-1 bg-white/20 text-black">
+              <option value="">Todas</option>
+              <option>Tóxico</option>
+              <option>Inolvidable</option>
+              <option>Gracioso</option>
+              <option>Mentiroso</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-1 text-sm font-medium text-black">Tipo de relación</label>
+            <select v-model="filters.relationshipType" class="w-full rounded px-3 py-1 bg-white/20 text-black">
+              <option value="">Todas</option>
+              <option>Exnovi@</option>
+              <option>Follamig@</option>
+              <option>Abierta</option>
+              <option>Ghosting</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button @click="getRandomProfile"
+              class="w-full bg-pink-600 hover:bg-pink-700 text-black font-bold py-2 px-4 rounded-xl transition">
+              🎁 Sorpresa del día
+            </button>
+          </div>
+          <div v-if="showSurpriseModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-6 w-[90%] max-w-md text-center shadow-lg relative">
+              <button @click="showSurpriseModal = false"
+                class="absolute top-2 right-2 text-black text-xl hover:text-red-500 transition">
+                &times;
+              </button>
+
+              <h2 class="text-2xl font-bold mb-4">🎁 Sorpresa del día</h2>
+
+              <div v-if="surpriseProfile" class="space-y-2">
+                <img :src="surpriseProfile.pic || '/default-avatar.png'"
+                  class="w-24 h-24 rounded-full mx-auto object-cover border border-black/10" />
+                <h3 class="text-xl font-semibold text-black">
+                  {{ surpriseProfile.name }} ({{ surpriseProfile.age }} años)
+                </h3>
+                <p class="text-black/70">Relación: {{ surpriseProfile.relationshipType }}</p>
+                <p class="text-black font-medium">⭐ {{ surpriseProfile.reviews?.length || 0 }} reseñas</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div class="space-y-4">
+          <div v-for="profile in exploredFilteredProfiles" :key="profile.id"
+            class="bg-white/10 rounded-xl p-4 shadow-md hover:shadow-lg transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+              <img :src="profile.pic || '/default-avatar.png'" alt="Avatar"
+                class="w-20 h-20 rounded-full object-cover border border-black/20" />
+              <h3 class="text-lg font-semibold text-black">{{ profile.name }} ({{ profile.age }} años)</h3>
+              <p class="text-sm text-black/80">Relación: {{ profile.relationshipType }}</p>
+              <div class="flex gap-2 mt-1 flex-wrap">
+                <span v-for="tag in profile.categories" :key="tag"
+                  class="bg-white/20 text-black text-xs px-2 py-1 rounded-xl">
+                  #{{ tag }}
+                </span>
+              </div>
+            </div>
+            <div class="text-black font-semibold">⭐ {{ profile.reviews.length }} reseñas</div>
+          </div>
+        </div>
+
+      </div>
       <!-- Login View -->
       <div v-if="currentView === 'login'">
         <button @click="currentView = 'home'" class="flex items-center text-amber-700 hover:text-amber-900">
@@ -617,12 +709,24 @@ async function handleEmailAuth() {
               class="mt-1 p-2 w-full border border-gray-300 rounded-md" />
           </div>
           <div class="mb-4">
+            <label for="relationshipType" class="block text-sm font-medium text-gray-700">Tipo de relación</label>
+            <select id="relationshipType" v-model="newProfile.relationshipType" required
+              class="mt-1 p-2 w-full border border-gray-300 rounded-md">
+              <option value="">Selecciona una opción</option>
+              <option value="follamig@">Follamig@</option>
+              <option value="estable">Estable</option>
+              <option value="exnovi@">Exnovi@</option>
+              <option value="abierta">Abierta</option>
+              <option value="casual">Ghosting</option>
+            </select>
+          </div>
+          <div class="mb-4">
             <label for="image" class="block text-sm font-medium text-gray-700">Imagen</label>
             <input id="image" type="file" @change="handleFileChange" required
               class="mt-1 p-2 w-full border border-gray-300 rounded-md" />
           </div>
           <button type="submit" class="bg-amber-600 text-white px-4 py-2 rounded-md hover:bg-amber-700">Subir
-            Perfil</button>
+            perfil</button>
         </form>
       </div>
 
